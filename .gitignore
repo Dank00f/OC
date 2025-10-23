@@ -1,0 +1,6 @@
+/build/
+/.vscode/ipch/
+/.vscode/*.db
+CMakeCache.txt
+CMakeFiles/
+*.user
