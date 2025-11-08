@@ -4,3 +4,14 @@
 CMakeCache.txt
 CMakeFiles/
 *.user
+# build artifacts
+/proc-runner/build/
+/build/
+/*.obj
+/*.o
+/*.exe
+*.a
+*.lib
+*.dll
+*.so
+*.dylib
