@@ -13,7 +13,7 @@ using namespace std;
 static volatile sig_atomic_t g_stop = 0;
 static void on_signal(int){ g_stop = 1; }
 
-// --- Время (UTC) ---
+// Время (UTC) 
 static time_t parse_iso_utc(const string& iso) {
     tm t{};
     if (iso.size() < 20 || iso[4] != '-' || iso[7] != '-' || iso[10] != 'T' || iso[13] != ':' || iso[16] != ':' || iso.back() != 'Z')
@@ -44,7 +44,7 @@ static string iso_utc_from(time_t tt) {
 static time_t floor_hour(time_t tt){ return (tt/3600)*3600; }
 static time_t floor_day (time_t tt){ return (tt/86400)*86400; }
 
-// --- аккум ---
+//  аккум 
 struct Acc {
     double sum=0.0; size_t n=0;
     void add(double x){ sum+=x; ++n; }
@@ -140,7 +140,7 @@ int main(int argc, char** argv){
         }
     }
 
-    // graceful flush на выходе — закрываем незакрытый час/день
+    // graceful flush на выходе — закрываем не закрытый час/день
     if (have_h) roll_hour(cur_h);
     if (have_d) roll_day(cur_d);
     return 0;
