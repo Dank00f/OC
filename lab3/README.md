@@ -20,12 +20,14 @@ cd /d %USERPROFILE%\OC\lab3
 rmdir /s /q build 2>nul
 cmake -S . -B build -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release
 cmake --build build
-build\proc_test.exe```
+build\proc_test.exe
+```
 
 ## Пример запуска внешней программы:
 
 ```bat
-build\proc_test.exe C:\Windows\System32\ping.exe ya.ru -n 2 ```
+build\proc_test.exe C:\Windows\System32\ping.exe ya.ru -n 2
+```
 
 ## Сборка (Linux / Kali)
 
@@ -34,13 +36,12 @@ cd ~/OC/lab3
 rm -rf build
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j
-./build/proc_test ```
+./build/proc_test
+```
 
 >Пример:
 
 ```bat
-./build/proc_test /bin/echo hello world ```
-
-
----
+./build/proc_test /bin/echo hello world
+```
 
