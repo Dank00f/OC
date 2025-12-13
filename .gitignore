@@ -1,0 +1,8 @@
+**/build/
+**/build_win/
+**/*.exe
+**/*.obj
+**/*.pdb
+**/*.ilk
+**/*.lib
+**/*.exp
