@@ -1,0 +1,113 @@
+ninja: Entering directory `build'
+[1/4] /usr/bin/c++ -DQT_CHARTS_LIB -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_NO_DEBUG -DQT_OPENGLWIDGETS_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -I/home/kali/OC/labs/lab6/build/temp_gui_autogen/include -isystem /usr/include/x86_64-linux-gnu/qt6/QtCore -isystem /usr/include/x86_64-linux-gnu/qt6 -isystem /usr/lib/x86_64-linux-gnu/qt6/mkspecs/linux-g++ -isystem /usr/include/x86_64-linux-gnu/qt6/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt6/QtGui -isystem /usr/include/x86_64-linux-gnu/qt6/QtNetwork -isystem /usr/include/x86_64-linux-gnu/qt6/QtCharts -isystem /usr/include/x86_64-linux-gnu/qt6/QtOpenGL -isystem /usr/include/x86_64-linux-gnu/qt6/QtOpenGLWidgets -O3 -DNDEBUG -std=gnu++17 -MD -MT CMakeFiles/temp_gui.dir/temp_gui_autogen/mocs_compilation.cpp.o -MF CMakeFiles/temp_gui.dir/temp_gui_autogen/mocs_compilation.cpp.o.d -o CMakeFiles/temp_gui.dir/temp_gui_autogen/mocs_compilation.cpp.o -c /home/kali/OC/labs/lab6/build/temp_gui_autogen/mocs_compilation.cpp
+FAILED: [code=1] CMakeFiles/temp_gui.dir/temp_gui_autogen/mocs_compilation.cpp.o 
+/usr/bin/c++ -DQT_CHARTS_LIB -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_NO_DEBUG -DQT_OPENGLWIDGETS_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -I/home/kali/OC/labs/lab6/build/temp_gui_autogen/include -isystem /usr/include/x86_64-linux-gnu/qt6/QtCore -isystem /usr/include/x86_64-linux-gnu/qt6 -isystem /usr/lib/x86_64-linux-gnu/qt6/mkspecs/linux-g++ -isystem /usr/include/x86_64-linux-gnu/qt6/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt6/QtGui -isystem /usr/include/x86_64-linux-gnu/qt6/QtNetwork -isystem /usr/include/x86_64-linux-gnu/qt6/QtCharts -isystem /usr/include/x86_64-linux-gnu/qt6/QtOpenGL -isystem /usr/include/x86_64-linux-gnu/qt6/QtOpenGLWidgets -O3 -DNDEBUG -std=gnu++17 -MD -MT CMakeFiles/temp_gui.dir/temp_gui_autogen/mocs_compilation.cpp.o -MF CMakeFiles/temp_gui.dir/temp_gui_autogen/mocs_compilation.cpp.o.d -o CMakeFiles/temp_gui.dir/temp_gui_autogen/mocs_compilation.cpp.o -c /home/kali/OC/labs/lab6/build/temp_gui_autogen/mocs_compilation.cpp
+In file included from /home/kali/OC/labs/lab6/build/temp_gui_autogen/UVLADIE3JM/moc_MainWindow.cpp:9,
+                 from /home/kali/OC/labs/lab6/build/temp_gui_autogen/mocs_compilation.cpp:2:
+/home/kali/OC/labs/lab6/build/temp_gui_autogen/UVLADIE3JM/../../../src/MainWindow.h:58:5: error: ‘QtCharts’ does not name a type; did you mean ‘QChart’?
+   58 |     QtCharts::QChartView* chartView = nullptr;
+      |     ^~~~~~~~
+      |     QChart
+/home/kali/OC/labs/lab6/build/temp_gui_autogen/UVLADIE3JM/../../../src/MainWindow.h:59:5: error: ‘QtCharts’ does not name a type; did you mean ‘QChart’?
+   59 |     QtCharts::QLineSeries* series = nullptr;
+      |     ^~~~~~~~
+      |     QChart
+/home/kali/OC/labs/lab6/build/temp_gui_autogen/UVLADIE3JM/../../../src/MainWindow.h:60:5: error: ‘QtCharts’ does not name a type; did you mean ‘QChart’?
+   60 |     QtCharts::QValueAxis* axisX = nullptr;
+      |     ^~~~~~~~
+      |     QChart
+/home/kali/OC/labs/lab6/build/temp_gui_autogen/UVLADIE3JM/../../../src/MainWindow.h:61:5: error: ‘QtCharts’ does not name a type; did you mean ‘QChart’?
+   61 |     QtCharts::QValueAxis* axisY = nullptr;
+      |     ^~~~~~~~
+      |     QChart
+[2/4] /usr/bin/c++ -DQT_CHARTS_LIB -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_NO_DEBUG -DQT_OPENGLWIDGETS_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -I/home/kali/OC/labs/lab6/build/temp_gui_autogen/include -isystem /usr/include/x86_64-linux-gnu/qt6/QtCore -isystem /usr/include/x86_64-linux-gnu/qt6 -isystem /usr/lib/x86_64-linux-gnu/qt6/mkspecs/linux-g++ -isystem /usr/include/x86_64-linux-gnu/qt6/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt6/QtGui -isystem /usr/include/x86_64-linux-gnu/qt6/QtNetwork -isystem /usr/include/x86_64-linux-gnu/qt6/QtCharts -isystem /usr/include/x86_64-linux-gnu/qt6/QtOpenGL -isystem /usr/include/x86_64-linux-gnu/qt6/QtOpenGLWidgets -O3 -DNDEBUG -std=gnu++17 -MD -MT CMakeFiles/temp_gui.dir/src/main.cpp.o -MF CMakeFiles/temp_gui.dir/src/main.cpp.o.d -o CMakeFiles/temp_gui.dir/src/main.cpp.o -c /home/kali/OC/labs/lab6/src/main.cpp
+FAILED: [code=1] CMakeFiles/temp_gui.dir/src/main.cpp.o 
+/usr/bin/c++ -DQT_CHARTS_LIB -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_NO_DEBUG -DQT_OPENGLWIDGETS_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -I/home/kali/OC/labs/lab6/build/temp_gui_autogen/include -isystem /usr/include/x86_64-linux-gnu/qt6/QtCore -isystem /usr/include/x86_64-linux-gnu/qt6 -isystem /usr/lib/x86_64-linux-gnu/qt6/mkspecs/linux-g++ -isystem /usr/include/x86_64-linux-gnu/qt6/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt6/QtGui -isystem /usr/include/x86_64-linux-gnu/qt6/QtNetwork -isystem /usr/include/x86_64-linux-gnu/qt6/QtCharts -isystem /usr/include/x86_64-linux-gnu/qt6/QtOpenGL -isystem /usr/include/x86_64-linux-gnu/qt6/QtOpenGLWidgets -O3 -DNDEBUG -std=gnu++17 -MD -MT CMakeFiles/temp_gui.dir/src/main.cpp.o -MF CMakeFiles/temp_gui.dir/src/main.cpp.o.d -o CMakeFiles/temp_gui.dir/src/main.cpp.o -c /home/kali/OC/labs/lab6/src/main.cpp
+In file included from /home/kali/OC/labs/lab6/src/main.cpp:2:
+/home/kali/OC/labs/lab6/src/MainWindow.h:58:5: error: ‘QtCharts’ does not name a type; did you mean ‘QChart’?
+   58 |     QtCharts::QChartView* chartView = nullptr;
+      |     ^~~~~~~~
+      |     QChart
+/home/kali/OC/labs/lab6/src/MainWindow.h:59:5: error: ‘QtCharts’ does not name a type; did you mean ‘QChart’?
+   59 |     QtCharts::QLineSeries* series = nullptr;
+      |     ^~~~~~~~
+      |     QChart
+/home/kali/OC/labs/lab6/src/MainWindow.h:60:5: error: ‘QtCharts’ does not name a type; did you mean ‘QChart’?
+   60 |     QtCharts::QValueAxis* axisX = nullptr;
+      |     ^~~~~~~~
+      |     QChart
+/home/kali/OC/labs/lab6/src/MainWindow.h:61:5: error: ‘QtCharts’ does not name a type; did you mean ‘QChart’?
+   61 |     QtCharts::QValueAxis* axisY = nullptr;
+      |     ^~~~~~~~
+      |     QChart
+[3/4] /usr/bin/c++ -DQT_CHARTS_LIB -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_NO_DEBUG -DQT_OPENGLWIDGETS_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -I/home/kali/OC/labs/lab6/build/temp_gui_autogen/include -isystem /usr/include/x86_64-linux-gnu/qt6/QtCore -isystem /usr/include/x86_64-linux-gnu/qt6 -isystem /usr/lib/x86_64-linux-gnu/qt6/mkspecs/linux-g++ -isystem /usr/include/x86_64-linux-gnu/qt6/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt6/QtGui -isystem /usr/include/x86_64-linux-gnu/qt6/QtNetwork -isystem /usr/include/x86_64-linux-gnu/qt6/QtCharts -isystem /usr/include/x86_64-linux-gnu/qt6/QtOpenGL -isystem /usr/include/x86_64-linux-gnu/qt6/QtOpenGLWidgets -O3 -DNDEBUG -std=gnu++17 -MD -MT CMakeFiles/temp_gui.dir/src/MainWindow.cpp.o -MF CMakeFiles/temp_gui.dir/src/MainWindow.cpp.o.d -o CMakeFiles/temp_gui.dir/src/MainWindow.cpp.o -c /home/kali/OC/labs/lab6/src/MainWindow.cpp
+FAILED: [code=1] CMakeFiles/temp_gui.dir/src/MainWindow.cpp.o 
+/usr/bin/c++ -DQT_CHARTS_LIB -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_NO_DEBUG -DQT_OPENGLWIDGETS_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -I/home/kali/OC/labs/lab6/build/temp_gui_autogen/include -isystem /usr/include/x86_64-linux-gnu/qt6/QtCore -isystem /usr/include/x86_64-linux-gnu/qt6 -isystem /usr/lib/x86_64-linux-gnu/qt6/mkspecs/linux-g++ -isystem /usr/include/x86_64-linux-gnu/qt6/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt6/QtGui -isystem /usr/include/x86_64-linux-gnu/qt6/QtNetwork -isystem /usr/include/x86_64-linux-gnu/qt6/QtCharts -isystem /usr/include/x86_64-linux-gnu/qt6/QtOpenGL -isystem /usr/include/x86_64-linux-gnu/qt6/QtOpenGLWidgets -O3 -DNDEBUG -std=gnu++17 -MD -MT CMakeFiles/temp_gui.dir/src/MainWindow.cpp.o -MF CMakeFiles/temp_gui.dir/src/MainWindow.cpp.o.d -o CMakeFiles/temp_gui.dir/src/MainWindow.cpp.o -c /home/kali/OC/labs/lab6/src/MainWindow.cpp
+In file included from /home/kali/OC/labs/lab6/src/MainWindow.cpp:1:
+/home/kali/OC/labs/lab6/src/MainWindow.h:58:5: error: ‘QtCharts’ does not name a type; did you mean ‘QChart’?
+   58 |     QtCharts::QChartView* chartView = nullptr;
+      |     ^~~~~~~~
+      |     QChart
+/home/kali/OC/labs/lab6/src/MainWindow.h:59:5: error: ‘QtCharts’ does not name a type; did you mean ‘QChart’?
+   59 |     QtCharts::QLineSeries* series = nullptr;
+      |     ^~~~~~~~
+      |     QChart
+/home/kali/OC/labs/lab6/src/MainWindow.h:60:5: error: ‘QtCharts’ does not name a type; did you mean ‘QChart’?
+   60 |     QtCharts::QValueAxis* axisX = nullptr;
+      |     ^~~~~~~~
+      |     QChart
+/home/kali/OC/labs/lab6/src/MainWindow.h:61:5: error: ‘QtCharts’ does not name a type; did you mean ‘QChart’?
+   61 |     QtCharts::QValueAxis* axisY = nullptr;
+      |     ^~~~~~~~
+      |     QChart
+/home/kali/OC/labs/lab6/src/MainWindow.cpp:18:17: error: ‘QtCharts’ is not a namespace-name
+   18 | using namespace QtCharts;
+      |                 ^~~~~~~~
+/home/kali/OC/labs/lab6/src/MainWindow.cpp: In constructor ‘MainWindow::MainWindow()’:
+/home/kali/OC/labs/lab6/src/MainWindow.cpp:53:26: warning: ‘void QDateTimeEdit::setTimeSpec(Qt::TimeSpec)’ is deprecated: Use setTimeZone() instead [-Wdeprecated-declarations]
+   53 |     fromEdit->setTimeSpec(Qt::UTC);
+      |     ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QDateTimeEdit:1,
+                 from /home/kali/OC/labs/lab6/src/MainWindow.cpp:8:
+/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qdatetimeedit.h:135:10: note: declared here
+  135 |     void setTimeSpec(Qt::TimeSpec spec);
+      |          ^~~~~~~~~~~
+/home/kali/OC/labs/lab6/src/MainWindow.cpp:59:24: warning: ‘void QDateTimeEdit::setTimeSpec(Qt::TimeSpec)’ is deprecated: Use setTimeZone() instead [-Wdeprecated-declarations]
+   59 |     toEdit->setTimeSpec(Qt::UTC);
+      |     ~~~~~~~~~~~~~~~~~~~^~~~~~~~~
+/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qdatetimeedit.h:135:10: note: declared here
+  135 |     void setTimeSpec(Qt::TimeSpec spec);
+      |          ^~~~~~~~~~~
+/home/kali/OC/labs/lab6/src/MainWindow.cpp:73:5: error: ‘series’ was not declared in this scope
+   73 |     series = new QLineSeries();
+      |     ^~~~~~
+/home/kali/OC/labs/lab6/src/MainWindow.cpp:79:5: error: ‘axisX’ was not declared in this scope
+   79 |     axisX = new QValueAxis();
+      |     ^~~~~
+/home/kali/OC/labs/lab6/src/MainWindow.cpp:80:5: error: ‘axisY’ was not declared in this scope
+   80 |     axisY = new QValueAxis();
+      |     ^~~~~
+/home/kali/OC/labs/lab6/src/MainWindow.cpp:88:5: error: ‘chartView’ was not declared in this scope; did you mean ‘QChartView’?
+   88 |     chartView = new QChartView(chart);
+      |     ^~~~~~~~~
+      |     QChartView
+/home/kali/OC/labs/lab6/src/MainWindow.cpp: In member function ‘void MainWindow::setStatus(const QString&)’:
+/home/kali/OC/labs/lab6/src/MainWindow.cpp:109:16: error: invalid use of incomplete type ‘class QStatusBar’
+  109 |     statusBar()->showMessage(s, 4000);
+      |                ^~
+In file included from /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QMainWindow:1,
+                 from /home/kali/OC/labs/lab6/src/MainWindow.h:3:
+/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qmainwindow.h:20:7: note: forward declaration of ‘class QStatusBar’
+   20 | class QStatusBar;
+      |       ^~~~~~~~~~
+/home/kali/OC/labs/lab6/src/MainWindow.cpp: In member function ‘void MainWindow::updateChart(QVector<Sample>&)’:
+/home/kali/OC/labs/lab6/src/MainWindow.cpp:166:5: error: ‘series’ was not declared in this scope
+  166 |     series->clear();
+      |     ^~~~~~
+/home/kali/OC/labs/lab6/src/MainWindow.cpp:181:5: error: ‘axisX’ was not declared in this scope
+  181 |     axisX->setRange((qreal)minX, (qreal)maxX);
+      |     ^~~~~
+/home/kali/OC/labs/lab6/src/MainWindow.cpp:183:5: error: ‘axisY’ was not declared in this scope
+  183 |     axisY->setRange(minY, maxY);
+      |     ^~~~~
+ninja: build stopped: subcommand failed.

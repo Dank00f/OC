@@ -1,8 +1,22 @@
-**/build/
-**/build_win/
-**/*.exe
+# build folders
+**/build*/
+**/out/
+**/.vs/
+**/CMakeFiles/
+**/CMakeCache.txt
+**/cmake_install.cmake
+**/Makefile
+**/*.dir/
 **/*.obj
 **/*.pdb
 **/*.ilk
-**/*.lib
-**/*.exp
+**/*.exe
+
+# temp "commands" accidentally created as files
+labs/lab5/cd
+labs/lab5/ls
+labs/lab5/dir
+labs/lab5/cmake
+
+# sqlite downloaded deps (if you want to keep them OUT of repo)
+# labs/lab5/third_party/sqlite/

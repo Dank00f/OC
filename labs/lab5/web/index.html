@@ -1,0 +1,30 @@
+﻿<!doctype html>
+<meta charset="utf-8"/>
+<title>Temp Logger</title>
+<h1>Temp Logger</h1>
+<div>
+  <button id="btnCurrent">Current</button>
+  <pre id="cur"></pre>
+</div>
+<div style="margin-top:12px;">
+  <div>
+    <label>from (UTC ISO): <input id="from" size="24"/></label>
+    <label>to (UTC ISO): <input id="to" size="24"/></label>
+    <button id="btnStats">Stats</button>
+  </div>
+  <pre id="stats"></pre>
+</div>
+<script>
+function iso(d){ return d.toISOString().replace('.000',''); }
+const to = new Date();
+const from = new Date(Date.now()-3600*1000);
+document.getElementById('from').value = iso(from);
+document.getElementById('to').value = iso(to);
+async function getJson(u){ const r=await fetch(u); if(!r.ok) throw new Error(r.status); return await r.json(); }
+document.getElementById('btnCurrent').onclick = async ()=>{ const j=await getJson('/api/current'); document.getElementById('cur').textContent=JSON.stringify(j,null,2); };
+document.getElementById('btnStats').onclick = async ()=>{
+  const f=document.getElementById('from').value; const t=document.getElementById('to').value;
+  const j=await getJson('/api/stats?from='+encodeURIComponent(f)+'&to='+encodeURIComponent(t));
+  document.getElementById('stats').textContent=JSON.stringify(j,null,2);
+};
+</script>

@@ -1,0 +1,58 @@
+void paintEvent(QPaintEvent*) override {
+    QPainter p(this);
+    p.setRenderHint(QPainter::Antialiasing, true);
+
+    // Нормальные цвета из палитры (а не "вечно белый фон")
+    const QColor bg = palette().color(QPalette::Base);
+    const QColor fg = palette().color(QPalette::Text);
+
+    p.fillRect(rect(), bg);
+
+    if (pts_.size() < 2) {
+        p.setPen(fg);
+        p.drawText(rect(), Qt::AlignCenter, "No data");
+        return;
+    }
+
+    // Поля и область графика
+    const int L = 40, R = 10, T = 10, B = 25;
+    QRectF r = rect().adjusted(L, T, -R, -B);
+
+    // min/max по данным
+    double tmin = pts_[0].second, tmax = pts_[0].second;
+    for (auto &pt : pts_) { tmin = std::min(tmin, pt.second); tmax = std::max(tmax, pt.second); }
+    if (tmax - tmin < 1e-9) { tmax = tmin + 1.0; }
+
+    const auto x0 = pts_.front().first;
+    const auto x1 = pts_.back().first;
+    const double dx = std::max(1.0, double(x1 - x0));
+
+    auto mapX = [&](qint64 ts) {
+        return r.left() + (double(ts - x0) / dx) * r.width();
+    };
+    auto mapY = [&](double v) {
+        return r.bottom() - ((v - tmin) / (tmax - tmin)) * r.height();
+    };
+
+    // Оси/рамка
+    p.setPen(QPen(fg, 1));
+    p.drawRect(r);
+
+    // Линия графика (контрастная!)
+    QPen pen(fg, 2);
+    p.setPen(pen);
+
+    QPainterPath path;
+    path.moveTo(mapX(pts_[0].first), mapY(pts_[0].second));
+    for (size_t i = 1; i < pts_.size(); ++i) {
+        path.lineTo(mapX(pts_[i].first), mapY(pts_[i].second));
+    }
+    p.drawPath(path);
+
+    // Подписи min/max
+    p.setPen(fg);
+    p.drawText(QRectF(0, 0, L - 4, 20), Qt::AlignRight | Qt::AlignVCenter,
+               QString::number(tmax, 'f', 2));
+    p.drawText(QRectF(0, height() - B, L - 4, 20), Qt::AlignRight | Qt::AlignVCenter,
+               QString::number(tmin, 'f', 2));
+}

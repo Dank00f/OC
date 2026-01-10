@@ -1,0 +1,358 @@
+[2025-12-08 06:07:40.967] leader pid=29892 counter=3
+[2025-12-08 06:07:41.987] child2 mid pid=22220 counter/=2 -> 3
+[2025-12-08 06:07:41.987] child2 exit pid=22220
+[2025-12-08 06:07:42.075] leader pid=29892 counter=4
+[2025-12-08 06:07:43.060] leader pid=29892 spawned child1=9200 child2=21676
+[2025-12-08 06:07:43.057] child1 start pid=9200 counter+=10 -> 17
+[2025-12-08 06:07:43.058] child2 start pid=21676 counter*=2 -> 34
+[2025-12-08 06:07:43.070] child1 exit pid=9200
+[2025-12-08 06:07:43.169] leader pid=29892 counter=34
+[2025-12-08 06:07:44.261] leader pid=29892 counter=38
+[2025-12-08 06:07:45.081] child2 mid pid=21676 counter/=2 -> 20
+[2025-12-08 06:07:45.082] child2 exit pid=21676
+[2025-12-08 06:07:45.359] leader pid=29892 counter=21
+[2025-12-08 06:07:46.137] leader pid=29892 spawned child1=24304 child2=10556
+[2025-12-08 06:07:46.132] child1 start pid=24304 counter+=10 -> 34
+[2025-12-08 06:07:46.135] child2 start pid=10556 counter*=2 -> 68
+[2025-12-08 06:07:46.147] child1 exit pid=24304
+[2025-12-08 06:07:46.461] leader pid=29892 counter=69
+[2025-12-08 06:07:47.557] leader pid=29892 counter=72
+[2025-12-08 06:07:48.157] child2 mid pid=10556 counter/=2 -> 37
+[2025-12-08 06:07:48.157] child2 exit pid=10556
+[2025-12-08 06:07:48.655] leader pid=29892 counter=39
+[2025-12-08 06:07:49.208] leader pid=29892 spawned child1=17420 child2=3804
+[2025-12-08 06:07:49.205] child1 start pid=17420 counter+=10 -> 51
+[2025-12-08 06:07:49.206] child2 start pid=3804 counter*=2 -> 102
+[2025-12-08 06:07:49.218] child1 exit pid=17420
+[2025-12-08 06:07:49.763] leader pid=29892 counter=103
+[2025-12-08 06:07:50.852] leader pid=29892 counter=107
+[2025-12-08 06:07:51.228] child2 mid pid=3804 counter/=2 -> 54
+[2025-12-08 06:07:51.229] child2 exit pid=3804
+[2025-12-08 06:07:51.948] leader pid=29892 counter=56
+[2025-12-08 06:07:52.281] leader pid=29892 spawned child1=16668 child2=35720
+[2025-12-08 06:07:52.277] child1 start pid=16668 counter+=10 -> 67
+[2025-12-08 06:07:52.279] child2 start pid=35720 counter*=2 -> 134
+[2025-12-08 06:07:52.291] child1 exit pid=16668
+[2025-12-08 06:07:52.948] leader pid=29892 counter=136
+[2025-12-08 06:07:54.044] leader pid=29892 counter=140
+[2025-12-08 06:07:54.300] child2 mid pid=35720 counter/=2 -> 70
+[2025-12-08 06:07:54.300] child2 exit pid=35720
+[2025-12-08 06:07:55.141] leader pid=29892 counter=73
+[2025-12-08 06:07:55.377] leader pid=29892 spawned child1=20556 child2=15068
+[2025-12-08 06:07:55.372] child1 start pid=20556 counter+=10 -> 83
+[2025-12-08 06:07:55.374] child2 start pid=15068 counter*=2 -> 166
+[2025-12-08 06:07:55.387] child1 exit pid=20556
+[2025-12-08 06:07:56.154] leader pid=29892 counter=169
+[2025-12-08 06:07:57.244] leader pid=29892 counter=172
+[2025-12-08 06:07:57.398] child2 mid pid=15068 counter/=2 -> 86
+[2025-12-08 06:07:57.399] child2 exit pid=15068
+[2025-12-08 06:07:58.341] leader pid=29892 counter=89
+[2025-12-08 06:07:58.454] leader pid=29892 spawned child1=35508 child2=27456
+[2025-12-08 06:07:58.450] child1 start pid=35508 counter+=10 -> 99
+[2025-12-08 06:07:58.453] child2 start pid=27456 counter*=2 -> 198
+[2025-12-08 06:07:58.465] child1 exit pid=35508
+[2025-12-08 06:07:59.446] leader pid=29892 counter=201
+[2025-12-08 06:08:00.478] child2 mid pid=27456 counter/=2 -> 102
+[2025-12-08 06:08:00.478] child2 exit pid=27456
+[2025-12-08 06:08:00.544] leader pid=29892 counter=102
+[2025-12-08 06:08:01.531] leader pid=29892 spawned child1=19496 child2=10444
+[2025-12-08 06:08:01.526] child1 start pid=19496 counter+=10 -> 115
+[2025-12-08 06:08:01.528] child2 start pid=10444 counter*=2 -> 230
+[2025-12-08 06:08:01.541] child1 exit pid=19496
+[2025-12-08 06:08:01.649] leader pid=29892 counter=230
+[2025-12-08 06:08:02.743] leader pid=29892 counter=234
+[2025-12-08 06:08:03.551] child2 mid pid=10444 counter/=2 -> 118
+[2025-12-08 06:08:03.551] child2 exit pid=10444
+[2025-12-08 06:08:03.841] leader pid=29892 counter=119
+[2025-12-08 06:08:04.605] leader pid=29892 spawned child1=31984 child2=25120
+[2025-12-08 06:08:04.601] child1 start pid=31984 counter+=10 -> 132
+[2025-12-08 06:08:04.603] child2 start pid=25120 counter*=2 -> 264
+[2025-12-08 06:08:04.614] child1 exit pid=31984
+[2025-12-08 06:08:04.932] leader pid=29892 counter=265
+[2025-12-08 06:08:06.023] leader pid=29892 counter=268
+[2025-12-08 06:08:06.623] child2 mid pid=25120 counter/=2 -> 135
+[2025-12-08 06:08:06.624] child2 exit pid=25120
+[2025-12-08 06:08:07.119] leader pid=29892 counter=137
+[2025-12-08 06:08:07.666] leader pid=29892 spawned child1=5904 child2=26240
+[2025-12-08 06:08:07.663] child1 start pid=5904 counter+=10 -> 149
+[2025-12-08 06:08:07.665] child2 start pid=26240 counter*=2 -> 298
+[2025-12-08 06:08:07.676] child1 exit pid=5904
+[2025-12-08 06:08:08.212] leader pid=29892 counter=299
+[2025-12-08 06:08:09.310] leader pid=29892 counter=303
+[2025-12-08 06:08:09.685] child2 mid pid=26240 counter/=2 -> 152
+[2025-12-08 06:08:09.686] child2 exit pid=26240
+[2025-12-08 06:08:10.321] leader pid=29892 counter=154
+[2025-12-08 06:08:10.763] leader pid=29892 spawned child1=19212 child2=32960
+[2025-12-08 06:08:10.760] child1 start pid=19212 counter+=10 -> 166
+[2025-12-08 06:08:10.762] child2 start pid=32960 counter*=2 -> 332
+[2025-12-08 06:08:10.786] child1 exit pid=19212
+[2025-12-08 06:08:11.311] leader pid=29892 counter=333
+[2025-12-08 06:08:12.404] leader pid=29892 counter=337
+[2025-12-08 06:08:12.798] child2 mid pid=32960 counter/=2 -> 169
+[2025-12-08 06:08:12.798] child2 exit pid=32960
+[2025-12-08 06:08:13.498] leader pid=29892 counter=171
+[2025-12-08 06:08:13.827] leader pid=29892 spawned child1=35484 child2=29148
+[2025-12-08 06:08:13.823] child1 start pid=35484 counter+=10 -> 182
+[2025-12-08 06:08:13.825] child2 start pid=29148 counter*=2 -> 364
+[2025-12-08 06:08:13.839] child1 exit pid=35484
+[2025-12-08 06:08:14.589] leader pid=29892 counter=367
+[2025-12-08 06:08:15.688] leader pid=29892 counter=370
+[2025-12-08 06:08:15.850] child2 mid pid=29148 counter/=2 -> 185
+[2025-12-08 06:08:15.850] child2 exit pid=29148
+[2025-12-08 06:08:16.687] leader pid=29892 counter=187
+[2025-12-08 06:08:16.934] leader pid=29892 spawned child1=28844 child2=24216
+[2025-12-08 06:08:16.925] child1 start pid=28844 counter+=10 -> 198
+[2025-12-08 06:08:16.927] child2 start pid=24216 counter*=2 -> 396
+[2025-12-08 06:08:16.960] child1 exit pid=28844
+[2025-12-08 06:08:17.697] leader pid=29892 counter=399
+[2025-12-08 06:08:18.793] leader pid=29892 counter=402
+[2025-12-08 06:08:18.978] child2 mid pid=24216 counter/=2 -> 201
+[2025-12-08 06:08:18.978] child2 exit pid=24216
+[2025-12-08 06:08:19.892] leader pid=29892 counter=204
+[2025-12-08 06:08:20.016] leader pid=29892 spawned child1=32556 child2=19084
+[2025-12-08 06:08:20.015] child1 start pid=32556 counter+=10 -> 214
+[2025-12-08 06:08:20.015] child2 start pid=19084 counter*=2 -> 428
+[2025-12-08 06:08:20.027] child1 exit pid=32556
+[2025-12-08 06:08:20.903] leader pid=29892 counter=431
+[2025-12-08 06:08:21.994] leader pid=29892 counter=434
+[2025-12-08 06:08:22.037] child2 mid pid=19084 counter/=2 -> 217
+[2025-12-08 06:08:22.037] child2 exit pid=19084
+[2025-12-08 06:08:23.089] leader pid=29892 counter=220
+[2025-12-08 06:08:23.093] leader pid=29892 spawned child1=34640 child2=9784
+[2025-12-08 06:08:23.098] child1 start pid=34640 counter+=10 -> 230
+[2025-12-08 06:08:23.100] child2 start pid=9784 counter*=2 -> 460
+[2025-12-08 06:08:23.107] child1 exit pid=34640
+[2025-12-08 06:08:24.090] leader pid=29892 counter=463
+[2025-12-08 06:08:25.117] child2 mid pid=9784 counter/=2 -> 233
+[2025-12-08 06:08:25.118] child2 exit pid=9784
+[2025-12-08 06:08:25.186] leader pid=29892 counter=234
+[2025-12-08 06:08:26.174] leader pid=29892 spawned child1=5708 child2=20780
+[2025-12-08 06:08:26.171] child1 start pid=5708 counter+=10 -> 247
+[2025-12-08 06:08:26.173] child2 start pid=20780 counter*=2 -> 494
+[2025-12-08 06:08:26.185] child1 exit pid=5708
+[2025-12-08 06:08:26.294] leader pid=29892 counter=494
+[2025-12-08 06:08:27.389] leader pid=29892 counter=498
+[2025-12-08 06:08:28.194] child2 mid pid=20780 counter/=2 -> 250
+[2025-12-08 06:08:28.195] child2 exit pid=20780
+[2025-12-08 06:08:28.481] leader pid=29892 counter=251
+[2025-12-08 06:08:29.251] leader pid=29892 spawned child1=17908 child2=19172
+[2025-12-08 06:08:29.247] child1 start pid=17908 counter+=10 -> 264
+[2025-12-08 06:08:29.249] child2 start pid=19172 counter*=2 -> 528
+[2025-12-08 06:08:29.265] child1 exit pid=17908
+[2025-12-08 06:08:29.481] leader pid=29892 counter=528
+[2025-12-08 06:08:30.574] leader pid=29892 counter=532
+[2025-12-08 06:08:31.280] child2 mid pid=19172 counter/=2 -> 267
+[2025-12-08 06:08:31.281] child2 exit pid=19172
+[2025-12-08 06:08:31.671] leader pid=29892 counter=268
+[2025-12-08 06:08:32.358] leader pid=29892 spawned child1=20376 child2=9292
+[2025-12-08 06:08:32.354] child1 start pid=20376 counter+=10 -> 281
+[2025-12-08 06:08:32.357] child2 start pid=9292 counter*=2 -> 562
+[2025-12-08 06:08:32.368] child1 exit pid=20376
+[2025-12-08 06:08:32.683] leader pid=29892 counter=563
+[2025-12-08 06:08:33.778] leader pid=29892 counter=566
+[2025-12-08 06:08:34.379] child2 mid pid=9292 counter/=2 -> 284
+[2025-12-08 06:08:34.379] child2 exit pid=9292
+[2025-12-08 06:08:34.875] leader pid=29892 counter=286
+[2025-12-08 06:08:35.439] leader pid=29892 spawned child1=31680 child2=35248
+[2025-12-08 06:08:35.434] child1 start pid=31680 counter+=10 -> 297
+[2025-12-08 06:08:35.437] child2 start pid=35248 counter*=2 -> 594
+[2025-12-08 06:08:35.449] child1 exit pid=31680
+[2025-12-08 06:08:35.886] leader pid=29892 counter=596
+[2025-12-08 06:08:36.979] leader pid=29892 counter=599
+[2025-12-08 06:08:37.462] child2 mid pid=35248 counter/=2 -> 300
+[2025-12-08 06:08:37.462] child2 exit pid=35248
+[2025-12-08 06:08:38.078] leader pid=29892 counter=302
+[2025-12-08 06:08:38.531] leader pid=29892 spawned child1=1032 child2=20580
+[2025-12-08 06:08:38.526] child1 start pid=1032 counter+=10 -> 313
+[2025-12-08 06:08:38.529] child2 start pid=20580 counter*=2 -> 626
+[2025-12-08 06:08:38.543] child1 exit pid=1032
+[2025-12-08 06:08:39.094] leader pid=29892 counter=628
+[2025-12-08 06:08:40.093] leader pid=29892 counter=631
+[2025-12-08 06:08:40.555] child2 mid pid=20580 counter/=2 -> 316
+[2025-12-08 06:08:40.556] child2 exit pid=20580
+[2025-12-08 06:08:41.183] leader pid=29892 counter=318
+[2025-12-08 06:08:41.625] leader pid=29892 spawned child1=31280 child2=33152
+[2025-12-08 06:08:41.620] child1 start pid=31280 counter+=10 -> 329
+[2025-12-08 06:08:41.622] child2 start pid=33152 counter*=2 -> 658
+[2025-12-08 06:08:41.636] child1 exit pid=31280
+[2025-12-08 06:08:42.188] leader pid=29892 counter=660
+[2025-12-08 06:08:43.186] leader pid=29892 counter=663
+[2025-12-08 06:08:43.646] child2 mid pid=33152 counter/=2 -> 332
+[2025-12-08 06:08:43.646] child2 exit pid=33152
+[2025-12-08 06:08:44.279] leader pid=29892 counter=334
+[2025-12-08 06:08:44.714] leader pid=29892 spawned child1=15024 child2=34652
+[2025-12-08 06:08:44.710] child1 start pid=15024 counter+=10 -> 345
+[2025-12-08 06:08:44.712] child2 start pid=34652 counter*=2 -> 690
+[2025-12-08 06:08:44.725] child1 exit pid=15024
+[2025-12-08 06:08:45.374] leader pid=29892 counter=692
+[2025-12-08 06:08:46.479] leader pid=29892 counter=696
+[2025-12-08 06:08:46.733] child2 mid pid=34652 counter/=2 -> 348
+[2025-12-08 06:08:46.733] child2 exit pid=34652
+[2025-12-08 06:08:47.570] leader pid=29892 counter=350
+[2025-12-08 06:08:47.797] leader pid=29892 spawned child1=25960 child2=29776
+[2025-12-08 06:08:47.791] child1 start pid=25960 counter+=10 -> 361
+[2025-12-08 06:08:47.793] child2 start pid=29776 counter*=2 -> 722
+[2025-12-08 06:08:47.807] child1 exit pid=25960
+[2025-12-08 06:08:48.572] leader pid=29892 counter=724
+[2025-12-08 06:08:49.665] leader pid=29892 counter=728
+[2025-12-08 06:08:49.816] child2 mid pid=29776 counter/=2 -> 364
+[2025-12-08 06:08:49.816] child2 exit pid=29776
+[2025-12-08 06:08:50.758] leader pid=29892 counter=367
+[2025-12-08 06:08:50.870] leader pid=29892 spawned child1=20536 child2=34400
+[2025-12-08 06:08:50.867] child1 start pid=20536 counter+=10 -> 378
+[2025-12-08 06:08:50.869] child2 start pid=34400 counter*=2 -> 756
+[2025-12-08 06:08:50.881] child1 exit pid=20536
+[2025-12-08 06:08:51.891] leader pid=29892 counter=759
+[2025-12-08 06:08:52.889] leader pid=29892 counter=762
+[2025-12-08 06:08:52.890] child2 mid pid=34400 counter/=2 -> 381
+[2025-12-08 06:08:52.891] child2 exit pid=34400
+[2025-12-08 06:08:53.873] leader pid=29892 spawned child1=32376 child2=31644
+[2025-12-08 06:08:53.869] child1 start pid=32376 counter+=10 -> 394
+[2025-12-08 06:08:53.871] child2 start pid=31644 counter*=2 -> 788
+[2025-12-08 06:08:53.882] child1 exit pid=32376
+[2025-12-08 06:08:53.982] leader pid=29892 counter=789
+[2025-12-08 06:08:55.075] leader pid=29892 counter=792
+[2025-12-08 06:08:55.891] child2 mid pid=31644 counter/=2 -> 397
+[2025-12-08 06:08:55.891] child2 exit pid=31644
+[2025-12-08 06:08:56.167] leader pid=29892 counter=398
+[2025-12-08 06:08:56.938] leader pid=29892 spawned child1=33168 child2=32928
+[2025-12-08 06:08:56.933] child1 start pid=33168 counter+=10 -> 410
+[2025-12-08 06:08:56.935] child2 start pid=32928 counter*=2 -> 820
+[2025-12-08 06:08:56.949] child1 exit pid=33168
+[2025-12-08 06:08:57.171] leader pid=29892 counter=821
+[2025-12-08 06:08:58.277] leader pid=29892 counter=824
+[2025-12-08 06:08:58.959] child2 mid pid=32928 counter/=2 -> 413
+[2025-12-08 06:08:58.959] child2 exit pid=32928
+[2025-12-08 06:08:59.372] leader pid=29892 counter=414
+[2025-12-08 06:09:00.029] leader pid=29892 spawned child1=34724 child2=33516
+[2025-12-08 06:09:00.025] child1 start pid=34724 counter+=10 -> 426
+[2025-12-08 06:09:00.027] child2 start pid=33516 counter*=2 -> 852
+[2025-12-08 06:09:00.039] child1 exit pid=34724
+[2025-12-08 06:09:00.478] leader pid=29892 counter=853
+[2025-12-08 06:09:01.482] leader pid=29892 counter=857
+[2025-12-08 06:09:02.048] child2 mid pid=33516 counter/=2 -> 429
+[2025-12-08 06:09:02.048] child2 exit pid=33516
+[2025-12-08 06:09:02.573] leader pid=29892 counter=430
+[2025-12-08 06:09:03.121] leader pid=29892 spawned child1=30920 child2=29452
+[2025-12-08 06:09:03.117] child1 start pid=30920 counter+=10 -> 442
+[2025-12-08 06:09:03.120] child2 start pid=29452 counter*=2 -> 884
+[2025-12-08 06:09:03.130] child1 exit pid=30920
+[2025-12-08 06:09:03.664] leader pid=29892 counter=886
+[2025-12-08 06:09:04.764] leader pid=29892 counter=889
+[2025-12-08 06:09:05.140] child2 mid pid=29452 counter/=2 -> 445
+[2025-12-08 06:09:05.140] child2 exit pid=29452
+[2025-12-08 06:09:05.874] leader pid=29892 counter=448
+[2025-12-08 06:09:06.201] leader pid=29892 spawned child1=34244 child2=17224
+[2025-12-08 06:09:06.197] child1 start pid=34244 counter+=10 -> 459
+[2025-12-08 06:09:06.199] child2 start pid=17224 counter*=2 -> 918
+[2025-12-08 06:09:06.211] child1 exit pid=34244
+[2025-12-08 06:09:06.962] leader pid=29892 counter=920
+[2025-12-08 06:09:08.059] leader pid=29892 counter=924
+[2025-12-08 06:09:08.220] child2 mid pid=17224 counter/=2 -> 462
+[2025-12-08 06:09:08.220] child2 exit pid=17224
+[2025-12-08 06:09:09.151] leader pid=29892 counter=465
+[2025-12-08 06:09:09.263] leader pid=29892 spawned child1=33028 child2=30060
+[2025-12-08 06:09:09.261] child1 start pid=33028 counter+=10 -> 476
+[2025-12-08 06:09:09.262] child2 start pid=30060 counter*=2 -> 952
+[2025-12-08 06:09:09.272] child1 exit pid=33028
+[2025-12-08 06:09:10.245] leader pid=29892 counter=955
+[2025-12-08 06:09:11.282] child2 mid pid=30060 counter/=2 -> 479
+[2025-12-08 06:09:11.283] child2 exit pid=30060
+[2025-12-08 06:09:11.342] leader pid=29892 counter=479
+[2025-12-08 06:09:12.328] leader pid=29892 spawned child1=31064 child2=30348
+[2025-12-08 06:09:12.323] child1 start pid=31064 counter+=10 -> 492
+[2025-12-08 06:09:12.325] child2 start pid=30348 counter*=2 -> 984
+[2025-12-08 06:09:12.337] child1 exit pid=31064
+[2025-12-08 06:09:12.452] leader pid=29892 counter=985
+[2025-12-08 06:09:13.556] leader pid=29892 counter=988
+[2025-12-08 06:09:14.347] child2 mid pid=30348 counter/=2 -> 495
+[2025-12-08 06:09:14.347] child2 exit pid=30348
+[2025-12-08 06:09:14.652] leader pid=29892 counter=496
+[2025-12-08 06:09:15.421] leader pid=29892 spawned child1=4656 child2=17688
+[2025-12-08 06:09:15.418] child1 start pid=4656 counter+=10 -> 508
+[2025-12-08 06:09:15.419] child2 start pid=17688 counter*=2 -> 1016
+[2025-12-08 06:09:15.435] child1 exit pid=4656
+[2025-12-08 06:09:15.651] leader pid=29892 counter=1017
+[2025-12-08 06:09:16.748] leader pid=29892 counter=1021
+[2025-12-08 06:09:17.443] child2 mid pid=17688 counter/=2 -> 511
+[2025-12-08 06:09:17.443] child2 exit pid=17688
+[2025-12-08 06:09:17.843] leader pid=29892 counter=512
+[2025-12-08 06:09:18.517] leader pid=29892 spawned child1=34312 child2=2596
+[2025-12-08 06:09:18.514] child1 start pid=34312 counter+=10 -> 524
+[2025-12-08 06:09:18.515] child2 start pid=2596 counter*=2 -> 1048
+[2025-12-08 06:09:18.526] child1 exit pid=34312
+[2025-12-08 06:09:18.854] leader pid=29892 counter=1049
+[2025-12-08 06:09:19.948] leader pid=29892 counter=1053
+[2025-12-08 06:09:20.535] child2 mid pid=2596 counter/=2 -> 527
+[2025-12-08 06:09:20.536] child2 exit pid=2596
+[2025-12-08 06:09:21.042] leader pid=29892 counter=528
+[2025-12-08 06:09:21.591] leader pid=29892 spawned child1=34408 child2=28856
+[2025-12-08 06:09:21.588] child1 start pid=34408 counter+=10 -> 540
+[2025-12-08 06:09:21.589] child2 start pid=28856 counter*=2 -> 1080
+[2025-12-08 06:09:21.601] child1 exit pid=34408
+[2025-12-08 06:09:22.137] leader pid=29892 counter=1082
+[2025-12-08 06:09:23.227] leader pid=29892 counter=1085
+[2025-12-08 06:09:23.611] child2 mid pid=28856 counter/=2 -> 543
+[2025-12-08 06:09:23.612] child2 exit pid=28856
+[2025-12-08 06:09:24.325] leader pid=29892 counter=545
+[2025-12-08 06:09:24.654] leader pid=29892 spawned child1=31856 child2=5604
+[2025-12-08 06:09:24.649] child1 start pid=31856 counter+=10 -> 556
+[2025-12-08 06:09:24.652] child2 start pid=5604 counter*=2 -> 1112
+[2025-12-08 06:09:24.664] child1 exit pid=31856
+[2025-12-08 06:09:25.416] leader pid=29892 counter=1114
+[2025-12-08 06:09:26.513] leader pid=29892 counter=1118
+[2025-12-08 06:09:26.673] child2 mid pid=5604 counter/=2 -> 559
+[2025-12-08 06:09:26.673] child2 exit pid=5604
+[2025-12-08 06:09:27.607] leader pid=29892 counter=562
+[2025-12-08 06:09:27.719] leader pid=29892 spawned child1=31880 child2=17780
+[2025-12-08 06:09:27.715] child1 start pid=31880 counter+=10 -> 573
+[2025-12-08 06:09:27.717] child2 start pid=17780 counter*=2 -> 1146
+[2025-12-08 06:09:27.728] child1 exit pid=31880
+[2025-12-08 06:09:28.712] leader pid=29892 counter=1149
+[2025-12-08 06:09:29.738] child2 mid pid=17780 counter/=2 -> 576
+[2025-12-08 06:09:29.738] child2 exit pid=17780
+[2025-12-08 06:09:29.811] leader pid=29892 counter=576
+[2025-12-08 06:09:30.795] leader pid=29892 spawned child1=35788 child2=15300
+[2025-12-08 06:09:30.791] child1 start pid=35788 counter+=10 -> 590
+[2025-12-08 06:09:30.792] child2 start pid=15300 counter*=2 -> 1180
+[2025-12-08 06:09:30.813] child1 exit pid=35788
+[2025-12-08 06:09:30.905] leader pid=29892 counter=1180
+[2025-12-08 06:09:31.997] leader pid=29892 counter=1183
+[2025-12-08 06:09:32.823] child2 mid pid=15300 counter/=2 -> 593
+[2025-12-08 06:09:32.824] child2 exit pid=15300
+[2025-12-08 06:09:33.092] leader pid=29892 counter=594
+[2025-12-08 06:09:33.855] leader pid=29892 spawned child1=31080 child2=18160
+[2025-12-08 06:09:33.852] child1 start pid=31080 counter+=10 -> 606
+[2025-12-08 06:09:33.853] child2 start pid=18160 counter*=2 -> 1212
+[2025-12-08 06:09:33.865] child1 exit pid=31080
+[2025-12-08 06:09:34.181] leader pid=29892 counter=1213
+[2025-12-08 06:09:35.277] leader pid=29892 counter=1217
+[2025-12-08 06:09:35.874] child2 mid pid=18160 counter/=2 -> 609
+[2025-12-08 06:09:35.875] child2 exit pid=18160
+[2025-12-08 06:09:36.369] leader pid=29892 counter=610
+[2025-12-08 06:09:36.922] leader pid=29892 spawned child1=30396 child2=15612
+[2025-12-08 06:09:36.918] child1 start pid=30396 counter+=10 -> 622
+[2025-12-08 06:09:36.920] child2 start pid=15612 counter*=2 -> 1244
+[2025-12-08 06:09:36.931] child1 exit pid=30396
+[2025-12-08 06:09:37.378] leader pid=29892 counter=1246
+[2025-12-08 06:09:38.481] leader pid=29892 counter=1249
+[2025-12-08 06:09:38.941] child2 mid pid=15612 counter/=2 -> 625
+[2025-12-08 06:09:38.941] child2 exit pid=15612
+[2025-12-08 06:09:39.574] leader pid=29892 counter=627
+[2025-12-08 06:09:40.019] leader pid=29892 spawned child1=28580 child2=33024
+[2025-12-08 06:09:40.014] child1 start pid=28580 counter+=10 -> 638
+[2025-12-08 06:09:40.015] child2 start pid=33024 counter*=2 -> 1276
+[2025-12-08 06:09:40.030] child1 exit pid=28580
+[2025-12-08 06:09:40.574] leader pid=29892 counter=1278
+[2025-12-08 06:09:41.668] leader pid=29892 counter=1281
+[2025-12-08 06:09:42.042] child2 mid pid=33024 counter/=2 -> 641
+[2025-12-08 06:09:42.042] child2 exit pid=33024
+[2025-12-08 06:09:42.765] leader pid=29892 counter=644
+[2025-12-08 06:09:43.105] leader pid=29892 spawned child1=18084 child2=34332
+[2025-12-08 06:09:43.101] child1 start pid=18084 counter+=10 -> 655
+[2025-12-08 06:09:43.103] child2 start pid=34332 counter*=2 -> 1310
+[2025-12-08 06:09:43.114] child1 exit pid=18084
+[2025-12-08 06:09:43.874] leader pid=29892 counter=1312
+[2025-12-08 06:09:44.963] leader pid=29892 counter=1316
+[2025-12-08 06:09:45.124] child2 mid pid=34332 counter/=2 -> 658
+[2025-12-08 06:09:45.124] child2 exit pid=34332
