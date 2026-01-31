@@ -67,12 +67,13 @@ static StatsPoint parsePointObj(const QJsonObject& p, bool& ok) {
 
     // сервер может отдавать "ts" как ISO, либо как число (сек/мс)
     QDateTime tsUtc;
-    if (p.value("ts").isString()) {
-        tsUtc = QDateTime::fromString(p.value("ts").toString(), Qt::ISODate);
+    auto tsVal = p.contains("ts") ? p.value("ts") : (p.contains("time") ? p.value("time") : p.value("t"));
+      if (tsVal.isString()) {
+        tsUtc = QDateTime::fromString(tsVal.toString(), Qt::ISODate);
         tsUtc.setTimeZone(QTimeZone::utc());
-    } else if (p.value("ts").isDouble()) {
+    } else if (tsVal.isDouble()) {
         // если это сек или мс — определить грубо по величине
-        double v = p.value("ts").toDouble();
+        double v = tsVal.toDouble();
         qint64 t = (qint64)std::llround(v);
         if (t > 200000000000LL) { // похоже на миллисекунды
             tsUtc = QDateTime::fromMSecsSinceEpoch(t, QTimeZone::utc());
@@ -83,7 +84,8 @@ static StatsPoint parsePointObj(const QJsonObject& p, bool& ok) {
         return {};
     }
 
-    double temp = p.value("temp").toDouble(std::numeric_limits<double>::quiet_NaN());
+    auto tempVal = p.contains("temp") ? p.value("temp") : (p.contains("value") ? p.value("value") : p.value("v"));
+      double temp = tempVal.toDouble(std::numeric_limits<double>::quiet_NaN());
     if (!tsUtc.isValid() || !isFinite(temp)) return {};
 
     ok = true;
@@ -105,20 +107,53 @@ static bool parseStatsJson(const QByteArray& body, Stats& st) {
     st.min = o.value("min").toDouble(std::numeric_limits<double>::quiet_NaN());
     st.max = o.value("max").toDouble(std::numeric_limits<double>::quiet_NaN());
 
-    QJsonArray arr;
-    if (o.contains("series") && o.value("series").isArray()) arr = o.value("series").toArray();
-    else if (o.contains("samples") && o.value("samples").isArray()) arr = o.value("samples").toArray();
-    else arr = QJsonArray(); // допустимо: статистика есть, точек нет
+          QJsonArray arr;
+      if (o.contains("series")  && o.value("series").isArray())  arr = o.value("series").toArray();
+      else if (o.contains("samples") && o.value("samples").isArray()) arr = o.value("samples").toArray();
+      else if (o.contains("points")  && o.value("points").isArray())  arr = o.value("points").toArray();
+      else if (o.contains("data")    && o.value("data").isArray())    arr = o.value("data").toArray();
+      else if (o.contains("items")   && o.value("items").isArray())   arr = o.value("items").toArray();
+      else if (o.contains("rows")    && o.value("rows").isArray())    arr = o.value("rows").toArray();
+      else if (o.contains("values")  && o.value("values").isArray())  arr = o.value("values").toArray();
+      else arr = QJsonArray(); // допустимо: статистика есть, точек нет
 
     st.points.clear();
     st.points.reserve(arr.size());
 
-    for (const auto& v : arr) {
-        if (!v.isObject()) continue;
-        bool ok = false;
-        auto pt = parsePointObj(v.toObject(), ok);
-        if (ok) st.points.push_back(pt);
-    }
+          for (const auto& v : arr) {
+          bool ok = false;
+
+          if (v.isObject()) {
+              auto pt = parsePointObj(v.toObject(), ok);
+              if (ok) st.points.push_back(pt);
+              continue;
+          }
+
+          // формат 2: ["ts", temp] или [epoch_sec/ms, temp]
+          if (v.isArray()) {
+              QJsonArray a = v.toArray();
+              if (a.size() >= 2) {
+                  QDateTime tsUtc;
+                  const auto tsVal = a.at(0);
+                  if (tsVal.isString()) {
+                      tsUtc = QDateTime::fromString(tsVal.toString(), Qt::ISODate);
+                      tsUtc.setTimeZone(QTimeZone::utc());
+                  } else if (tsVal.isDouble()) {
+                      double vv = tsVal.toDouble();
+                      qint64 t = (qint64)std::llround(vv);
+                      if (t > 200000000000LL) tsUtc = QDateTime::fromMSecsSinceEpoch(t, QTimeZone::utc());
+                      else tsUtc = QDateTime::fromSecsSinceEpoch(t, QTimeZone::utc());
+                  }
+
+                  double temp = a.at(1).toDouble(std::numeric_limits<double>::quiet_NaN());
+                  if (tsUtc.isValid() && std::isfinite(temp)) {
+                      ok = true;
+                      st.points.push_back({tsUtc, temp});
+                  }
+              }
+              continue;
+          }
+      }
 
     // сортировка по времени (если сервер прислал неупорядоченно)
     std::sort(st.points.begin(), st.points.end(), [](const StatsPoint& a, const StatsPoint& b){
@@ -145,64 +180,66 @@ public:
 
 protected:
     void paintEvent(QPaintEvent*) override {
-        QPainter p(this);
-        p.setRenderHint(QPainter::Antialiasing, true);
+          QPainter p(this);
+          p.setRenderHint(QPainter::Antialiasing, true);
 
-        QRectF r = rect().adjusted(45, 12, -12, -30);
-        p.drawRect(r);
+          // форсим видимость независимо от темы
+          p.setPen(QPen(Qt::black, 2));
+          p.setBrush(Qt::NoBrush);
 
-        if (points.size() < 2) {
-            p.drawText(QPointF(10, 20), "No data");
-            return;
-        }
+          QRectF r = rect().adjusted(45, 12, -12, -30);
+          p.drawRect(r);
 
-        qint64 tMin = points.first().tsUtc.toSecsSinceEpoch();
-        qint64 tMax = points.last().tsUtc.toSecsSinceEpoch();
+          // всегда показываем кол-во точек
+          p.drawText(QPointF(10, 20), QString("pts=%1").arg(points.size()));
 
-        double yMin = points.first().temp;
-        double yMax = points.first().temp;
-        for (const auto& pt : points) {
-            yMin = std::min(yMin, pt.temp);
-            yMax = std::max(yMax, pt.temp);
-        }
+          if (points.size() < 2) {
+              p.drawText(QPointF(10, 40), "No data");
+              return;
+          }
 
-        if (tMax == tMin) tMax = tMin + 1;
-        if (yMax == yMin) { yMax = yMin + 1.0; yMin -= 1.0; }
+          qint64 tMin = points.first().tsUtc.toSecsSinceEpoch();
+          qint64 tMax = points.last().tsUtc.toSecsSinceEpoch();
 
-        auto mapX = [&](qint64 t){
-            double k = double(t - tMin) / double(tMax - tMin);
-            return r.left() + k * r.width();
-        };
-        auto mapY = [&](double y){
-            double k = (y - yMin) / (yMax - yMin);
-            return r.bottom() - k * r.height();
-        };
+          double yMin = points.first().temp;
+          double yMax = points.first().temp;
+          for (const auto& pt : points) {
+              yMin = std::min(yMin, pt.temp);
+              yMax = std::max(yMax, pt.temp);
+          }
 
-        // разрывы по времени: если между точками слишком большой гэп — НЕ соединяем
-        // Подстрой если хочешь: 5 сек обычно хватает.
-        const qint64 GAP_SEC = 5;
+          if (tMax == tMin) tMax = tMin + 1;
+          if (yMax == yMin) { yMax = yMin + 1.0; yMin -= 1.0; }
 
-        QPainterPath path;
-        auto t0 = points[0].tsUtc.toSecsSinceEpoch();
-        path.moveTo(mapX(t0), mapY(points[0].temp));
+          auto mapX = [&](qint64 t){
+              double k = double(t - tMin) / double(tMax - tMin);
+              return r.left() + k * r.width();
+          };
+          auto mapY = [&](double y){
+              double k = (y - yMin) / (yMax - yMin);
+              return r.bottom() - k * r.height();
+          };
 
-        for (int i = 1; i < points.size(); ++i) {
-            qint64 tPrev = points[i-1].tsUtc.toSecsSinceEpoch();
-            qint64 tCur  = points[i].tsUtc.toSecsSinceEpoch();
+          // линия
+          QPainterPath path;
+          path.moveTo(mapX(points[0].tsUtc.toSecsSinceEpoch()), mapY(points[0].temp));
+          for (int i = 1; i < points.size(); ++i) {
+              qint64 tCur = points[i].tsUtc.toSecsSinceEpoch();
+              path.lineTo(mapX(tCur), mapY(points[i].temp));
+          }
+          p.drawPath(path);
 
-            double x = mapX(tCur);
-            double y = mapY(points[i].temp);
+          // точки (чтобы даже если линия “почти незаметна”, точки было видно)
+          for (int i = 0; i < points.size(); ++i) {
+              double x = mapX(points[i].tsUtc.toSecsSinceEpoch());
+              double y = mapY(points[i].temp);
+              p.drawEllipse(QPointF(x, y), 2.5, 2.5);
+          }
 
-            if (tCur - tPrev > GAP_SEC) path.moveTo(x, y);
-            else path.lineTo(x, y);
-        }
-
-        p.drawPath(path);
-
-        // подписи
-        p.drawText(QPointF(10, 20), QString("max=%1").arg(yMax, 0, 'f', 3));
-        p.drawText(QPointF(10, 40), QString("min=%1").arg(yMin, 0, 'f', 3));
-    }
+          // дебаг-диапазоны
+          p.drawText(QPointF(10, 40), QString("tMin=%1 tMax=%2").arg(tMin).arg(tMax));
+          p.drawText(QPointF(10, 60), QString("yMin=%1 yMax=%2").arg(yMin,0,'f',3).arg(yMax,0,'f',3));
+}
 
 private:
     QVector<StatsPoint> points;
@@ -273,7 +310,8 @@ int main(int argc, char** argv) {
         QNetworkRequest req(url);
 
         auto* reply = nam.get(req);
-        QObject::connect(reply, &QNetworkReply::finished, [&]() {
+        QObject::connect(reply, &QNetworkReply::finished, [reply, curLbl]() {
+              if (!reply) return;
             QByteArray body = reply->readAll();
             auto err = reply->error();
             QString errStr = reply->errorString();
@@ -307,19 +345,19 @@ int main(int argc, char** argv) {
 
         // Сервер у тебя, судя по ошибкам, НЕ принимает ISO строки, а принимает число (скорее всего ms)
         // Поэтому шлём миллисекунды epoch — так будет стабильно.
-        qint64 fromMs = fromUtc.toMSecsSinceEpoch();
-        qint64 toMs   = toUtc.toMSecsSinceEpoch();
-
-        QUrl url(baseEdit->text().trimmed() + "/api/stats");
+        QString fromIso = fromUtc.toString(Qt::ISODate);
+          QString toIso   = toUtc.toString(Qt::ISODate);
+QUrl url(baseEdit->text().trimmed() + "/api/stats");
         QUrlQuery q;
-        q.addQueryItem("from", QString::number(fromMs));
-        q.addQueryItem("to",   QString::number(toMs));
+        q.addQueryItem("from", fromIso);
+        q.addQueryItem("to",   toIso);
         url.setQuery(q);
 
         QNetworkRequest req(url);
         auto* reply = nam.get(req);
 
-        QObject::connect(reply, &QNetworkReply::finished, [&]() {
+        QObject::connect(reply, &QNetworkReply::finished, [reply, stLbl, plot]() {
+              if (!reply) return;
             QByteArray body = reply->readAll();
             auto err = reply->error();
             QString errStr = reply->errorString();
