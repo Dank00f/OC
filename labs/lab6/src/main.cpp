@@ -115,7 +115,7 @@ static bool parseStatsJson(const QByteArray& body, Stats& st) {
       else if (o.contains("items")   && o.value("items").isArray())   arr = o.value("items").toArray();
       else if (o.contains("rows")    && o.value("rows").isArray())    arr = o.value("rows").toArray();
       else if (o.contains("values")  && o.value("values").isArray())  arr = o.value("values").toArray();
-      else arr = QJsonArray(); // допустимо: статистика есть, точек нет
+      else arr = QJsonArray(); 
 
     st.points.clear();
     st.points.reserve(arr.size());
@@ -183,7 +183,7 @@ protected:
           QPainter p(this);
           p.setRenderHint(QPainter::Antialiasing, true);
 
-          // форсим видимость независимо от темы
+          // видимость независимо от темы
           p.setPen(QPen(Qt::black, 2));
           p.setBrush(Qt::NoBrush);
 
@@ -343,8 +343,7 @@ int main(int argc, char** argv) {
             return;
         }
 
-        // Сервер у тебя, судя по ошибкам, НЕ принимает ISO строки, а принимает число (скорее всего ms)
-        // Поэтому шлём миллисекунды epoch — так будет стабильно.
+        // миллисекунды epoch — так будет стабильно.
         QString fromIso = fromUtc.toString(Qt::ISODate);
           QString toIso   = toUtc.toString(Qt::ISODate);
 QUrl url(baseEdit->text().trimmed() + "/api/stats");
