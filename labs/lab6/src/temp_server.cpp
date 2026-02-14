@@ -466,7 +466,7 @@ int main(int argc, char** argv){
             continue;
         }
 #endif
-        // one-thread-per-conn is fine for lab
+      
         std::thread([&, c](){
             handle_client(c, dd, mtx, latest);
             sock_close(c);
