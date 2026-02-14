@@ -42,7 +42,6 @@
 static std::atomic<bool> g_stop{false};
 static void on_signal(int){ g_stop = true; }
 
-// ---------- UTC time helpers ----------
 static time_t timegm_portable(std::tm* t){
 #ifdef _WIN32
     return _mkgmtime(t);
@@ -60,7 +59,7 @@ static bool gmtime_r_portable(const time_t* tt, std::tm* out){
 }
 
 static time_t parse_iso_utc(const std::string& iso){
-    // "YYYY-MM-DDTHH:MM:SSZ"
+  
     if (iso.size() < 20) return (time_t)-1;
     if (!(iso[4]=='-' && iso[7]=='-' && iso[10]=='T' && iso[13]==':' && iso[16]==':' && iso.back()=='Z')) return (time_t)-1;
 
@@ -86,7 +85,7 @@ static std::string iso_utc_from(time_t tt){
     return os.str();
 }
 
-// ---------- tiny url helpers ----------
+
 static int hexval(char c){
     if (c>='0' && c<='9') return c - '0';
     if (c>='a' && c<='f') return 10 + (c - 'a');
@@ -150,7 +149,6 @@ static std::string json_escape(const std::string& s){
     return os.str();
 }
 
-// ---------- storage (CSV log) ----------
 struct Sample { time_t tt{}; double temp{}; };
 
 static bool parse_csv_line(const std::string& line, Sample& s){
@@ -246,7 +244,7 @@ static void handle_client(socket_t c,
                           Sample& latest)
 {
     std::string req = recv_request(c);
-    // parse first line: METHOD PATH HTTP/1.1
+    
     std::istringstream is(req);
     std::string method, target, ver;
     is >> method >> target >> ver;
@@ -309,7 +307,7 @@ static void handle_client(socket_t c,
             }
         }
 
-        // downsample to ~300 points max for GUI
+       
         const size_t MAXP = 300;
         if (samples.size() > MAXP){
             size_t step = (samples.size() + MAXP - 1) / MAXP;
@@ -341,7 +339,7 @@ static void handle_client(socket_t c,
         return;
     }
 
-    // tiny landing page
+  
     if (path == "/" || path == "/index.html"){
         const char* html =
             "<!doctype html><html><head><meta charset='utf-8'><title>Temp Server</title></head>"
@@ -384,7 +382,6 @@ int main(int argc, char** argv){
     latest.tt = std::time(nullptr);
     latest.temp = 23.5;
 
-    // try load last
     Sample last{};
     if (read_last_sample(file, last)){
         latest = last;
