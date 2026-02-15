@@ -14,8 +14,8 @@
 
 using namespace QtCharts;
 
-// Парсим строку времени ISO в UTC
-// Сервер может прислать "Z" в конце, Qt::ISODate часто и так умеет, но тут мы явно убираем Z и задаем UTC
+// Парсинг строки времени ISO 8601 в UTC
+// Сервер может прислать "Z" в конце, Qt::ISODate часто и так умеет, но тут мы убираем Z и задаем UTC
 static QDateTime parseIsoUtc(QString s) {
     if (s.endsWith("Z")) s.chop(1);
     QDateTime dt = QDateTime::fromString(s, Qt::ISODate);
@@ -69,7 +69,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     m_statsLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
     root->addWidget(m_statsLabel);
 
-    // Таблица последних точек (ограничим отображение в fetchStats)
+    // Таблица последних точек (ограниченное отображение в fetchStats)
     m_table = new QTableWidget(this);
     m_table->setColumnCount(2);
     m_table->setHorizontalHeaderLabels({"ts (UTC)", "temp"});
@@ -85,7 +85,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     chart->setTitle("Temperature over period");
 
     // Оси графика
-    // По X показываем unix seconds, чтобы проще было без QDateTimeAxis
+    // По X - unix seconds, упращаем чтобы было без QDateTimeAxis
     m_axisX = new QValueAxis(this);
     m_axisY = new QValueAxis(this);
     m_axisX->setTitleText("time (unix sec)");
@@ -104,7 +104,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     m_statusLabel = new QLabel("Status: ready", this);
     root->addWidget(m_statusLabel);
 
-    // Устанавливаем центральный виджет окна
+    // Центральный виджет окна
     setCentralWidget(cw);
 
     // Сигналы: кнопки вызывают запросы
@@ -117,14 +117,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     timer->start(2000);
 }
 
-// Возвращаем base url без пробелов и без завершающего /
+// Возврат base url без пробелов и без завершающего /
 QString MainWindow::baseUrl() const {
     QString u = m_baseUrlEdit->text().trimmed();
     if (u.endsWith("/")) u.chop(1);
     return u;
 }
 
-// Сборка URL: base + path + query параметры
+// Сборка URL base + path + query параметры
 QUrl MainWindow::makeUrl(const QString& path, const QMap<QString, QString>& query) const {
     QUrl url(baseUrl() + path);
     if (!query.isEmpty()) {
