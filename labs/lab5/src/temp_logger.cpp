@@ -16,7 +16,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include <sqlite3.h>
+#include <sqlite3.h> // SQLite API (таблица measurements)
 
 #ifdef _WIN32
   #include <winsock2.h>
@@ -38,22 +38,27 @@
 
 using namespace std;
 
+// Флаг остановки для корректного завершения (Ctrl+C и т.д.)
 static atomic<bool> g_stop{false};
 static void on_signal(int){ g_stop = true; }
 
+// Лог в stderr
 static void log_line(const string& s){
   cerr << s << "\n";
   cerr.flush();
 }
 
+// Проверка формата времени "YYYY-MM-DDTHH:MM:SSZ"
 static bool is_isoz(const string& iso){
   return iso.size() == 20 &&
          iso[4]=='-' && iso[7]=='-' && iso[10]=='T' &&
          iso[13]==':' && iso[16]==':' && iso[19]=='Z';
 }
 
+// ISO UTC ("...Z") -> epoch seconds (int64)
 static optional<int64_t> parse_iso_utc_to_epoch(const string& iso){
   if(!is_isoz(iso)) return nullopt;
+
   tm t{};
   t.tm_year = stoi(iso.substr(0,4)) - 1900;
   t.tm_mon  = stoi(iso.substr(5,2)) - 1;
@@ -62,15 +67,18 @@ static optional<int64_t> parse_iso_utc_to_epoch(const string& iso){
   t.tm_min  = stoi(iso.substr(14,2));
   t.tm_sec  = stoi(iso.substr(17,2));
   t.tm_isdst = 0;
+
 #ifdef _WIN32
-  time_t tt = _mkgmtime(&t);
+  time_t tt = _mkgmtime(&t);   // Windows: UTC tm -> time_t
 #else
-  time_t tt = timegm(&t);
+  time_t tt = timegm(&t);      // Linux: UTC tm -> time_t
 #endif
+
   if(tt < 0) return nullopt;
   return (int64_t)tt;
 }
 
+// epoch seconds -> ISO UTC ("...Z")
 static string iso_utc_from_epoch(int64_t epoch){
   time_t tt = (time_t)epoch;
   tm t{};
@@ -84,21 +92,27 @@ static string iso_utc_from_epoch(int64_t epoch){
   return os.str();
 }
 
+// Обертка над SQLite: потокобезопасно (mutex), потому что симулятор и HTTP сервер в одном процессе
 struct Db {
   sqlite3* db=nullptr;
   mutex m;
 
+  // Открыть базу и создать таблицу
   bool open(const string& path){
     if(sqlite3_open(path.c_str(), &db) != SQLITE_OK){
       log_line(string("DB open failed: ") + (db?sqlite3_errmsg(db):"unknown"));
       return false;
     }
+
+    // WAL лучше для записи/чтения одновременно
+    // measurements(ts PRIMARY KEY, temp REAL)
     const char* sql =
       "PRAGMA journal_mode=WAL;"
       "CREATE TABLE IF NOT EXISTS measurements("
       " ts INTEGER PRIMARY KEY,"
       " temp REAL NOT NULL"
       ");";
+
     char* err=nullptr;
     if(sqlite3_exec(db, sql, nullptr, nullptr, &err) != SQLITE_OK){
       log_line(string("DB init failed: ") + (err?err:"(null)"));
@@ -113,6 +127,8 @@ struct Db {
     if(db){ sqlite3_close(db); db=nullptr; }
   }
 
+  // Вставка одного измерения (ts в секундах epoch)
+  // INSERT OR REPLACE, чтобы если ts совпал, строка обновилась
   bool insert(int64_t ts, double temp){
     lock_guard<mutex> lk(m);
     static const char* sql = "INSERT OR REPLACE INTO measurements(ts,temp) VALUES(?,?);";
@@ -125,6 +141,7 @@ struct Db {
     return ok;
   }
 
+  // Последнее измерение по времени
   optional<pair<int64_t,double>> latest(){
     lock_guard<mutex> lk(m);
     static const char* sql = "SELECT ts,temp FROM measurements ORDER BY ts DESC LIMIT 1;";
@@ -140,29 +157,34 @@ struct Db {
     return res;
   }
 
+  // Статистика за период + серия точек для графика
   struct Stats {
     int64_t from=0, to=0;
     int count=0;
     double avg=numeric_limits<double>::quiet_NaN();
     double mn=numeric_limits<double>::quiet_NaN();
     double mx=numeric_limits<double>::quiet_NaN();
-    vector<pair<int64_t,double>> series;
+    vector<pair<int64_t,double>> series; // (ts,temp)
   };
 
+  // from/to - epoch seconds, max_points - ограничение точек на графике что бы не было каши
   optional<Stats> stats(int64_t from, int64_t to, int max_points=300){
     if(to <= from) return nullopt;
-    Stats s; s.from=from; s.to=to;
 
+    Stats s; s.from=from; s.to=to;
     lock_guard<mutex> lk(m);
 
+    // 1) агрегаты (count, avg, min, max)
     {
       static const char* sql =
         "SELECT COUNT(*), AVG(temp), MIN(temp), MAX(temp) "
         "FROM measurements WHERE ts>=? AND ts<=?;";
+
       sqlite3_stmt* st=nullptr;
       if(sqlite3_prepare_v2(db, sql, -1, &st, nullptr) != SQLITE_OK) return nullopt;
       sqlite3_bind_int64(st, 1, from);
       sqlite3_bind_int64(st, 2, to);
+
       if(sqlite3_step(st) == SQLITE_ROW){
         s.count = sqlite3_column_int(st, 0);
         s.avg = sqlite3_column_double(st, 1);
@@ -172,14 +194,17 @@ struct Db {
       sqlite3_finalize(st);
     }
 
+    // 2) серия: берем не все подряд,а по step-ам, чтобы не отправлять трилиард точек
     int64_t span = to - from;
     int64_t step = (span / max_points);
     if(step < 1) step = 1;
 
+    // Берем точки, где (ts-from) % step == 0
     static const char* sql2 =
       "SELECT ts,temp FROM measurements "
       "WHERE ts>=? AND ts<=? AND ((ts-?) % ? = 0) "
       "ORDER BY ts ASC;";
+
     sqlite3_stmt* st=nullptr;
     if(sqlite3_prepare_v2(db, sql2, -1, &st, nullptr) != SQLITE_OK) return nullopt;
     sqlite3_bind_int64(st, 1, from);
@@ -198,6 +223,7 @@ struct Db {
   }
 };
 
+// Сборка HTTP ответа строкой (минимальный HTTP/1.1)
 static string http_response(int code, const string& ct, const string& body){
   const char* msg = (code==200) ? "OK" : (code==404 ? "Not Found" : "Error");
   ostringstream os;
@@ -205,12 +231,13 @@ static string http_response(int code, const string& ct, const string& body){
   os << "Content-Type: " << ct << "\r\n";
   os << "Content-Length: " << body.size() << "\r\n";
   os << "Connection: close\r\n";
-  os << "Access-Control-Allow-Origin: *\r\n";
+  os << "Access-Control-Allow-Origin: *\r\n"; // чтобы browser/Qt GUI могли дергать API без CORS проблем
   os << "\r\n";
   os << body;
   return os.str();
 }
 
+// Отправка данных до конца (send может отправить кусок, поэтому loop)
 static bool send_all(SOCKET c, const string& data){
   const char* p=data.c_str();
   size_t left=data.size();
@@ -227,6 +254,7 @@ static bool send_all(SOCKET c, const string& data){
   return true;
 }
 
+// Читаем HTTP request до "\r\n\r\n" (заголовки), тело не нужно (GET)
 static optional<string> recv_request(SOCKET c){
   string buf;
   buf.reserve(4096);
@@ -246,6 +274,7 @@ static optional<string> recv_request(SOCKET c){
   return buf;
 }
 
+// URL decode: %xx и '+'
 static string url_decode(const string& s){
   string out; out.reserve(s.size());
   for(size_t i=0;i<s.size();i++){
@@ -266,6 +295,7 @@ static string url_decode(const string& s){
   return out;
 }
 
+// query string "a=1&b=2" -> map
 static unordered_map<string,string> parse_query(const string& q){
   unordered_map<string,string> m;
   size_t i=0;
@@ -284,6 +314,7 @@ static unordered_map<string,string> parse_query(const string& q){
   return m;
 }
 
+// Прочитать файл (для статики web/)
 static string read_file_bin(const filesystem::path& p){
   ifstream f(p, ios::binary);
   if(!f) return "";
@@ -292,6 +323,7 @@ static string read_file_bin(const filesystem::path& p){
   return ss.str();
 }
 
+// Content-Type по расширению (чтобы браузер не ругался)
 static string content_type_for(const string& path){
   string lower = path;
   for(char& c: lower) c = (char)tolower((unsigned char)c);
@@ -305,9 +337,11 @@ static string content_type_for(const string& path){
 int main(int argc, char** argv){
   setvbuf(stderr, nullptr, _IONBF, 0);
 
+  // обработка Ctrl+C (нормально обрабатывается выход были траблы )
   signal(SIGINT, on_signal);
   signal(SIGTERM, on_signal);
 
+  // параметры по умолчанию
   string db_path="temp.db";
   bool serve=false;
   bool simulate=false;
@@ -320,6 +354,7 @@ int main(int argc, char** argv){
     return 1;
   };
 
+  // разбор аргументов командной строки
   try{
     for(int i=1;i<argc;i++){
       string a=argv[i];
@@ -350,12 +385,14 @@ int main(int argc, char** argv){
   }
 
 #ifdef _WIN32
+  // Windows: инициализация Winsock обязательна перед socket()
   WSADATA wsa{};
   if(WSAStartup(MAKEWORD(2,2), &wsa)!=0){
     return fatal("WSAStartup failed");
   }
 #endif
 
+  // открыть/инициализировать БД
   Db db;
   if(!db.open(db_path)){
     db.close();
@@ -365,10 +402,12 @@ int main(int argc, char** argv){
     return fatal("DB open/init failed");
   }
 
+  // статика web/ не критична, но предупредим
   if(!filesystem::exists(web_dir)){
     log_line("WARN: web dir not found: " + web_dir + " (static UI will 404)");
   }
 
+  // поток симуляции: каждые 250мс в temp в SQLite
   thread sim_thr;
   if(simulate){
     sim_thr = thread([&](){
@@ -376,7 +415,7 @@ int main(int argc, char** argv){
       normal_distribution<double> base(23.5, 0.9);
       uniform_real_distribution<double> noise(-0.8,0.8);
       while(!g_stop){
-        int64_t ts = (int64_t)time(nullptr);
+        int64_t ts = (int64_t)time(nullptr); // epoch seconds
         double temp = round((base(rng)+noise(rng))*1000.0)/1000.0;
         if(!db.insert(ts, temp)) log_line("WARN: DB insert failed");
         this_thread::sleep_for(chrono::milliseconds(250));
@@ -384,6 +423,7 @@ int main(int argc, char** argv){
     });
   }
 
+  // если не попросили --serve, то делать нечего
   if(!serve){
     log_line("Nothing to do: use --serve (and optionally --simulate). Try --help");
     g_stop = true;
@@ -395,6 +435,7 @@ int main(int argc, char** argv){
     return 1;
   }
 
+  // создать TCP сокет
   SOCKET s = ::socket(AF_INET, SOCK_STREAM, 0);
   if(s == (SOCKET)INVALID_SOCKET){
     g_stop = true;
@@ -406,6 +447,7 @@ int main(int argc, char** argv){
     return fatal("socket() failed");
   }
 
+  // reuseaddr чтобы быстрее перезапускать сервер
   int one=1;
 #ifdef _WIN32
   setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (const char*)&one, sizeof(one));
@@ -413,6 +455,7 @@ int main(int argc, char** argv){
   setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one));
 #endif
 
+  // bind на ip:port
   sockaddr_in addr{};
   addr.sin_family = AF_INET;
   addr.sin_port = htons((uint16_t)port);
@@ -456,6 +499,7 @@ int main(int argc, char** argv){
   log_line("DB: " + db_path);
   log_line("Web dir: " + web_dir);
 
+  // основной цикл: принятие соединения, чиитаем request, роутим по path
   while(!g_stop){
     fd_set rfds;
     FD_ZERO(&rfds);
@@ -463,6 +507,8 @@ int main(int argc, char** argv){
     timeval tv{};
     tv.tv_sec = 0;
     tv.tv_usec = 200*1000;
+
+    // select чтобы не висеть в accept навечно, а периодически проверять g_stop
     int rc = select((int)(s+1), &rfds, nullptr, nullptr, &tv);
     if(rc <= 0) continue;
 
@@ -471,12 +517,14 @@ int main(int argc, char** argv){
     SOCKET c = ::accept(s, (sockaddr*)&caddr, &clen);
     if(c == (SOCKET)INVALID_SOCKET) continue;
 
+    // читаем запрос
     auto reqOpt = recv_request(c);
     if(!reqOpt){ closesock(c); continue; }
 
     string req = *reqOpt;
     string first = req.substr(0, req.find("\r\n"));
 
+    // парс первой строкм: "GET /path?query HTTP/1.1"
     istringstream iss(first);
     string method, target, ver;
     iss >> method >> target >> ver;
@@ -489,12 +537,14 @@ int main(int argc, char** argv){
       query = target.substr(qpos+1);
     }
 
+    // поддерживаем только GET
     if(method != "GET"){
       send_all(c, http_response(404, "text/plain; charset=utf-8", "Not Found"));
       closesock(c);
       continue;
     }
 
+    // API: current
     if(path == "/api/current"){
       auto cur = db.latest();
       string body;
@@ -508,6 +558,7 @@ int main(int argc, char** argv){
       continue;
     }
 
+    // API: stats
     if(path == "/api/stats"){
       auto m = parse_query(query);
       if(!m.count("from") || !m.count("to")){
@@ -515,6 +566,8 @@ int main(int argc, char** argv){
         closesock(c);
         continue;
       }
+
+      // сервер строго требует ISOZ (с 'Z' на конце)
       auto fromE = parse_iso_utc_to_epoch(m["from"]);
       auto toE   = parse_iso_utc_to_epoch(m["to"]);
       if(!fromE || !toE){
@@ -522,6 +575,7 @@ int main(int argc, char** argv){
         closesock(c);
         continue;
       }
+
       auto st = db.stats(*fromE, *toE);
       if(!st){
         send_all(c, http_response(404, "text/plain; charset=utf-8", "bad range"));
@@ -529,6 +583,8 @@ int main(int argc, char** argv){
         continue;
       }
 
+      // JSON: агрегаты + series
+      // series формат: [ ["ISOZ", temp], ["ISOZ", temp], ... ]
       ostringstream body;
       body << "{";
       body << "\"from\":\"" << iso_utc_from_epoch(st->from) << "\",";
@@ -549,8 +605,10 @@ int main(int argc, char** argv){
       continue;
     }
 
+    // статика: "/" -> "/index.html"
     if(path == "/") path = "/index.html";
 
+    // защита от выхода из web_dir через ../
     filesystem::path web_root = filesystem::path(web_dir).lexically_normal();
     filesystem::path f = (filesystem::path(web_dir) / path.substr(1)).lexically_normal();
 
@@ -562,11 +620,13 @@ int main(int argc, char** argv){
       continue;
     }
 
+    // читаем файл и отправляем
     string data = read_file_bin(f);
     send_all(c, http_response(200, content_type_for(f.string()), data));
     closesock(c);
   }
 
+  // graceful shutdown
   log_line("Stopping...");
   closesock(s);
   g_stop = true;
