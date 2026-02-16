@@ -1,21 +1,21 @@
 #include "MainWindow.h"
 
-#include <QtWidgets>
-#include <QNetworkReply>
-#include <QUrlQuery>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonArray>
+#include <QtWidgets>           // весь Qt Widgets UI: QLabel, QLineEdit, layouts, QTimer и т.д.
+#include <QNetworkReply>       // ответ на HTTP запрос
+#include <QUrlQuery>           // сборка query string ?from=...&to=...
+#include <QJsonDocument>       // JSON bytes -> document
+#include <QJsonObject>         // JSON объект { ... }
+#include <QJsonArray>          // JSON массив [ ... ]
 
-#include <QtCharts/QChartView>
-#include <QtCharts/QChart>
-#include <QtCharts/QLineSeries>
-#include <QtCharts/QValueAxis>
+#include <QtCharts/QChartView> // окно для графика
+#include <QtCharts/QChart>     // сам график
+#include <QtCharts/QLineSeries>// линия на графике
+#include <QtCharts/QValueAxis> // оси (числовые)
 
 using namespace QtCharts;
 
 // Парсинг строки времени ISO 8601 в UTC
-// Сервер может прислать "Z" в конце, Qt::ISODate часто и так умеет, но тут мы убираем Z и задаем UTC
+// Сервер обычно присылает ...Z, мы убираем Z и выставляем UTC вручную. Т.К, мы считаем, что строка это время в UTC, а не локальное
 static QDateTime parseIsoUtc(QString s) {
     if (s.endsWith("Z")) s.chop(1);
     QDateTime dt = QDateTime::fromString(s, Qt::ISODate);
@@ -27,11 +27,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     // Заголовок окна
     setWindowTitle("Lab6: Temp GUI Client (Qt)");
 
-    // Центральный виджет и корневой layout
+    // Центральный виджет и корневой layout (все элементы лежат внутри cw)
     auto *cw = new QWidget(this);
     auto *root = new QVBoxLayout(cw);
 
     // Верхняя панель: base url + кнопка current
+    // Base URL нужен, чтобы легко переключаться между сервером lab5 или заменит на другйо
     auto *top = new QHBoxLayout();
     top->addWidget(new QLabel("Base URL:", this));
     m_baseUrlEdit = new QLineEdit("http://127.0.0.1:8080", this);
@@ -42,11 +43,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     root->addLayout(top);
 
     // Лейбл для отображения текущей температуры
+    // selectable - чтобы копипастаит значение/время
     m_currentLabel = new QLabel("Current: (not fetched)", this);
     m_currentLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
     root->addWidget(m_currentLabel);
 
     // Панель выбора диапазона времени + кнопка stats
+    // Диапазон храним в UTC, чтобы не ловить сдвиги по таймзоне и DST
     auto *period = new QHBoxLayout();
     period->addWidget(new QLabel("From (UTC):", this));
     m_fromEdit = new QDateTimeEdit(QDateTime::currentDateTimeUtc().addSecs(-3600), this);
@@ -64,12 +67,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     period->addWidget(m_btnStats);
     root->addLayout(period);
 
-    // Лейбл для агрегированной статистики
+    // Лейбл для агрегированной статистики (avg/count/min/max)
     m_statsLabel = new QLabel("Stats: (not fetched)", this);
     m_statsLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
     root->addWidget(m_statsLabel);
 
-    // Таблица последних точек (ограниченное отображение в fetchStats)
+    // Таблица последних точек
+    // Показываем только последние N точек, чтобы UI не зависал на больших периодах
     m_table = new QTableWidget(this);
     m_table->setColumnCount(2);
     m_table->setHorizontalHeaderLabels({"ts (UTC)", "temp"});
@@ -78,6 +82,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     root->addWidget(m_table, 1);
 
     // График QtCharts: одна линия температуры
+    // QtCharts требует модуль Charts в сборке
     m_series = new QLineSeries(this);
     auto *chart = new QChart();
     chart->addSeries(m_series);
@@ -85,7 +90,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     chart->setTitle("Temperature over period");
 
     // Оси графика
-    // По X - unix seconds, упращаем чтобы было без QDateTimeAxis
+    // По X используем unix seconds, чтобы не тянуть QDateTimeAxis
     m_axisX = new QValueAxis(this);
     m_axisY = new QValueAxis(this);
     m_axisX->setTitleText("time (unix sec)");
@@ -107,17 +112,18 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     // Центральный виджет окна
     setCentralWidget(cw);
 
-    // Сигналы: кнопки вызывают запросы
+    // Сигналы: кнопки запускают HTTP запросы
     connect(m_btnCurrent, &QPushButton::clicked, this, &MainWindow::fetchCurrent);
     connect(m_btnStats, &QPushButton::clicked, this, &MainWindow::fetchStats);
 
-    // Таймер автоподтягивания current каждые 2 секунды
+    // Таймер автоподтягивания current каждые 2 секунды для наглядности
     auto *timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &MainWindow::fetchCurrent);
     timer->start(2000);
 }
 
 // Возврат base url без пробелов и без завершающего /
+// Это нужно, чтобы при склейке base + "/api/current" не получилось "//api/current"
 QString MainWindow::baseUrl() const {
     QString u = m_baseUrlEdit->text().trimmed();
     if (u.endsWith("/")) u.chop(1);
@@ -125,6 +131,7 @@ QString MainWindow::baseUrl() const {
 }
 
 // Сборка URL base + path + query параметры
+// Пример: base + "/api/stats" + {"from": "...", "to": "..."}
 QUrl MainWindow::makeUrl(const QString& path, const QMap<QString, QString>& query) const {
     QUrl url(baseUrl() + path);
     if (!query.isEmpty()) {
@@ -135,7 +142,7 @@ QUrl MainWindow::makeUrl(const QString& path, const QMap<QString, QString>& quer
     return url;
 }
 
-// Обновление строки статуса
+// Обновление строки статуса 
 void MainWindow::setStatus(const QString& s) {
     m_statusLabel->setText("Status: " + s);
 }
@@ -153,6 +160,7 @@ void MainWindow::showStats(double avg, int count, double minv, double maxv) {
 
 // Парсер JSON ответа /api/current
 // Ожидается объект с полями temp и ts
+// Пример: {"temp": 23.5, "ts":"2026-02-17T12:00:00Z"}
 bool MainWindow::parseCurrentJson(const QByteArray& body, double& temp, QString& ts, QString& err) {
     auto doc = QJsonDocument::fromJson(body);
     if (!doc.isObject()) { err = "current: json is not object"; return false; }
@@ -172,9 +180,6 @@ double MainWindow::computeAvg(const QVector<QPair<QDateTime,double>>& series) co
 }
 
 // Парсер JSON ответа /api/stats
-// Поддерживает два формата:
-// 1) агрегаты avg,count,min,max
-// 2) массив точек measurements или series с полями ts,temp
 bool MainWindow::parseStatsJson(const QByteArray& body, double& avg, int& count, double& minv, double& maxv,
                                 QVector<QPair<QDateTime,double>>& series, QString& err) {
     auto doc = QJsonDocument::fromJson(body);
@@ -202,7 +207,7 @@ bool MainWindow::parseStatsJson(const QByteArray& body, double& avg, int& count,
         series.clear();
         series.reserve(arr.size());
         for (const auto& v : arr) {
-            if (!v.isObject()) continue;
+            if (!v.isObject()) continue;           // ожидаем объект
             auto it = v.toObject();
             if (!it.contains("ts") || !it.contains("temp")) continue;
 
@@ -213,7 +218,7 @@ bool MainWindow::parseStatsJson(const QByteArray& body, double& avg, int& count,
             series.push_back({dt, tv});
         }
 
-        // Сортировка по времени, чтобы график был нормальный
+        // Сортировка по времени, чтобы график не скакал
         std::sort(series.begin(), series.end(), [](auto& a, auto& b){ return a.first < b.first; });
 
         // Если агрегатов не было, считаем их по серии сами
@@ -231,7 +236,7 @@ bool MainWindow::parseStatsJson(const QByteArray& body, double& avg, int& count,
         return true;
     }
 
-    // Массивов нет, но агрегаты есть, тогда это тоже ок
+    // Массивов нет, но агрегаты есть, тогда график будет пустой
     if (hasAgg) return true;
 
     err = "stats: neither (avg,count) nor measurements array";
@@ -239,6 +244,7 @@ bool MainWindow::parseStatsJson(const QByteArray& body, double& avg, int& count,
 }
 
 // Перерисовка графика по серии
+// X: unix seconds, Y: temp
 void MainWindow::updateChart(const QVector<QPair<QDateTime,double>>& series) {
     m_series->clear();
     if (series.isEmpty()) return;
@@ -269,13 +275,13 @@ void MainWindow::updateChart(const QVector<QPair<QDateTime,double>>& series) {
 // GET /api/current
 void MainWindow::fetchCurrent() {
     setStatus("GET /api/current ...");
-    auto url = makeUrl("/api/current");
-    auto *reply = m_net.get(QNetworkRequest(url));
+    auto url = makeUrl("/api/current");                 // base + path
+    auto *reply = m_net.get(QNetworkRequest(url));      // отправка GET
 
     connect(reply, &QNetworkReply::finished, this, [this, reply]() {
-        QByteArray body = reply->readAll();
+        QByteArray body = reply->readAll();             // тело ответа
 
-        // Ошибка сети или HTTP уровня Qt
+        // Ошибка сети/HTTP уровня Qt
         if (reply->error() != QNetworkReply::NoError) {
             setStatus("current error: " + reply->errorString());
             reply->deleteLater();
@@ -293,7 +299,7 @@ void MainWindow::fetchCurrent() {
         // Обновляем UI
         showCurrent(temp, ts);
         setStatus("ok (current)");
-        reply->deleteLater();
+        reply->deleteLater(); // удалить reply безопасно через event loop
     });
 }
 
@@ -306,7 +312,8 @@ void MainWindow::fetchStats() {
         return;
     }
 
-    // Сервер ожидает ISO UTC с Z
+    // Сервер ожидает ISO UTC с Z в конце
+    // Пример: 2026-02-17T12:00:00Z
     QString fromIso = from.toString(Qt::ISODate) + "Z";
     QString toIso   = to.toString(Qt::ISODate) + "Z";
 
@@ -354,7 +361,7 @@ void MainWindow::fetchStats() {
             // Перерисовываем график
             updateChart(series);
         } else {
-            m_series->clear();
+            m_series->clear(); // данных нет, график очищаем
         }
 
         setStatus("ok (stats)");
