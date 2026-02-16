@@ -12,7 +12,13 @@
 #include <QtCharts/QLineSeries>// линия на графике
 #include <QtCharts/QValueAxis> // оси (числовые)
 
+#include <algorithm>
+#include <cmath>
+#include <limits>
+
 using namespace QtCharts;
+
+static bool isFinite(double x) { return std::isfinite(x); }
 
 // Парсинг строки времени ISO 8601 в UTC
 // Сервер обычно присылает ...Z, мы убираем Z и выставляем UTC вручную. Т.К, мы считаем, что строка это время в UTC, а не локальное
@@ -142,7 +148,7 @@ QUrl MainWindow::makeUrl(const QString& path, const QMap<QString, QString>& quer
     return url;
 }
 
-// Обновление строки статуса 
+// Обновление строки статуса
 void MainWindow::setStatus(const QString& s) {
     m_statusLabel->setText("Status: " + s);
 }
@@ -179,68 +185,159 @@ double MainWindow::computeAvg(const QVector<QPair<QDateTime,double>>& series) co
     return s / double(series.size());
 }
 
-// Парсер JSON ответа /api/stats
+// Парсер JSON ответа /api/stats (расширенный)
+// Поддерживаем точки как:
+// 1) объект: {"ts": "...", "temp": 12.3} (или {"time":...,"value":...})
+// 2) массив: ["2026-..Z", 12.3]
+// 3) массив epoch: [1700000000, 12.3] или [1700000000000, 12.3] (сек/мс)
 bool MainWindow::parseStatsJson(const QByteArray& body, double& avg, int& count, double& minv, double& maxv,
                                 QVector<QPair<QDateTime,double>>& series, QString& err) {
     auto doc = QJsonDocument::fromJson(body);
     if (!doc.isObject()) { err = "stats: json is not object"; return false; }
     auto o = doc.object();
 
-    // Проверяем, прислал ли сервер агрегаты
+    // сервер мог вернуть {"error":"..."}
+    if (o.contains("error")) {
+        err = "stats: " + o.value("error").toString("server error");
+        return false;
+    }
+
+    // агрегаты (если есть)
     bool hasAgg = o.contains("avg") && o.contains("count");
     if (hasAgg) {
-        avg = o.value("avg").toDouble();
-        count = o.value("count").toInt();
-        minv = o.contains("min") ? o.value("min").toDouble() : avg;
-        maxv = o.contains("max") ? o.value("max").toDouble() : avg;
+        avg = o.value("avg").toDouble(std::numeric_limits<double>::quiet_NaN());
+        count = o.value("count").toInt(0);
+        minv = o.contains("min") ? o.value("min").toDouble(avg) : avg;
+        maxv = o.contains("max") ? o.value("max").toDouble(avg) : avg;
     } else {
-        avg = 0; count = 0; minv = 0; maxv = 0;
+        avg = std::numeric_limits<double>::quiet_NaN();
+        count = 0;
+        minv = std::numeric_limits<double>::quiet_NaN();
+        maxv = std::numeric_limits<double>::quiet_NaN();
     }
 
-    // Ищем массив точек
+    // пробуем разные имена массива точек
     QJsonArray arr;
-    if (o.contains("measurements") && o.value("measurements").isArray()) arr = o.value("measurements").toArray();
-    else if (o.contains("series") && o.value("series").isArray()) arr = o.value("series").toArray();
+    auto pickArr = [&](const char* key) -> bool {
+        if (o.contains(key) && o.value(key).isArray()) { arr = o.value(key).toArray(); return true; }
+        return false;
+    };
 
-    // Если массив есть, парсим точки
-    if (!arr.isEmpty()) {
-        series.clear();
-        series.reserve(arr.size());
-        for (const auto& v : arr) {
-            if (!v.isObject()) continue;           // ожидаем объект
-            auto it = v.toObject();
-            if (!it.contains("ts") || !it.contains("temp")) continue;
+    if (!pickArr("measurements") &&
+        !pickArr("series") &&
+        !pickArr("samples") &&
+        !pickArr("points") &&
+        !pickArr("data") &&
+        !pickArr("items") &&
+        !pickArr("rows") &&
+        !pickArr("values")) {
+        arr = QJsonArray();
+    }
 
-            QDateTime dt = parseIsoUtc(it.value("ts").toString());
-            double tv = it.value("temp").toDouble();
-            if (!dt.isValid()) continue;
+    // если массива нет, но агрегаты есть - это норм (просто график будет пустой)
+    if (arr.isEmpty()) {
+        if (hasAgg) return true;
+        err = "stats: no points array and no aggregates";
+        return false;
+    }
+
+    series.clear();
+    series.reserve(arr.size());
+
+    auto parseTs = [&](const QJsonValue& v, QDateTime& out) -> bool {
+        if (v.isString()) {
+            QDateTime dt = parseIsoUtc(v.toString());
+            if (!dt.isValid()) return false;
+            out = dt;
+            return true;
+        }
+        if (v.isDouble()) {
+            double dv = v.toDouble();
+            qint64 t = (qint64)std::llround(dv);
+            if (t > 200000000000LL) out = QDateTime::fromMSecsSinceEpoch(t, Qt::UTC);
+            else out = QDateTime::fromSecsSinceEpoch(t, Qt::UTC);
+            return out.isValid();
+        }
+        return false;
+    };
+
+    auto parseTemp = [&](const QJsonValue& v, double& out) -> bool {
+        if (!v.isDouble()) return false;
+        double t = v.toDouble(std::numeric_limits<double>::quiet_NaN());
+        if (!isFinite(t)) return false;
+        out = t;
+        return true;
+    };
+
+    for (const auto& v : arr) {
+        // формат 1: объект
+        if (v.isObject()) {
+            auto obj = v.toObject();
+
+            QJsonValue tsVal;
+            if (obj.contains("ts")) tsVal = obj.value("ts");
+            else if (obj.contains("time")) tsVal = obj.value("time");
+            else if (obj.contains("t")) tsVal = obj.value("t");
+            else continue;
+
+            QJsonValue tempVal;
+            if (obj.contains("temp")) tempVal = obj.value("temp");
+            else if (obj.contains("value")) tempVal = obj.value("value");
+            else if (obj.contains("v")) tempVal = obj.value("v");
+            else continue;
+
+            QDateTime dt;
+            double tv;
+            if (!parseTs(tsVal, dt)) continue;
+            if (!parseTemp(tempVal, tv)) continue;
 
             series.push_back({dt, tv});
+            continue;
         }
 
-        // Сортировка по времени, чтобы график не скакал
-        std::sort(series.begin(), series.end(), [](auto& a, auto& b){ return a.first < b.first; });
+        // формат 2: массив [ts, temp]
+        if (v.isArray()) {
+            QJsonArray a = v.toArray();
+            if (a.size() < 2) continue;
 
-        // Если агрегатов не было, считаем их по серии сами
-        if (!hasAgg) {
-            avg = computeAvg(series);
-            count = series.size();
-            if (count > 0) {
-                minv = series[0].second;
-                maxv = series[0].second;
-                for (auto& p : series) { minv = std::min(minv, p.second); maxv = std::max(maxv, p.second); }
-            } else {
-                minv = maxv = avg;
-            }
+            QDateTime dt;
+            double tv;
+            if (!parseTs(a.at(0), dt)) continue;
+            if (!parseTemp(a.at(1), tv)) continue;
+
+            series.push_back({dt, tv});
+            continue;
         }
-        return true;
     }
 
-    // Массивов нет, но агрегаты есть, тогда график будет пустой
-    if (hasAgg) return true;
+    if (series.isEmpty()) {
+        if (hasAgg) return true;
+        err = "stats: points array parsed to empty";
+        return false;
+    }
 
-    err = "stats: neither (avg,count) nor measurements array";
-    return false;
+    // сортировка по времени
+    std::sort(series.begin(), series.end(), [](auto& a, auto& b){ return a.first < b.first; });
+
+    // если агрегатов не было, считаем по точкам
+    if (!hasAgg) {
+        avg = computeAvg(series);
+        count = series.size();
+        minv = series[0].second;
+        maxv = series[0].second;
+        for (auto& p : series) { minv = std::min(minv, p.second); maxv = std::max(maxv, p.second); }
+    }
+
+    // если агрегаты были, но NaN - тоже пересчитаем для корректности UI
+    if (!isFinite(avg) || !isFinite(minv) || !isFinite(maxv) || count <= 0) {
+        avg = computeAvg(series);
+        count = series.size();
+        minv = series[0].second;
+        maxv = series[0].second;
+        for (auto& p : series) { minv = std::min(minv, p.second); maxv = std::max(maxv, p.second); }
+    }
+
+    return true;
 }
 
 // Перерисовка графика по серии
